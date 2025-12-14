@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { resetGame, startGame } from '../../../lib/game';
+import { resetGame } from '../../../lib/game';
 
 interface UseCountdownReturn {
   countdown: number | null;
@@ -12,7 +12,13 @@ interface UseCountdownReturn {
   startCountdown: (type: 'start' | 'reset', seconds: number) => void;
 }
 
-export function useCountdown(onResetComplete?: () => void): UseCountdownReturn {
+export function useCountdown({
+  onResetComplete,
+  onStart,
+}: {
+  onResetComplete?: () => void;
+  onStart?: () => void;
+} = {}): UseCountdownReturn {
   const [countdown, setCountdown] = useState<number | null>(null);
   const [countdownType, setCountdownType] = useState<'start' | 'reset' | null>(
     null,
@@ -30,7 +36,7 @@ export function useCountdown(onResetComplete?: () => void): UseCountdownReturn {
 
     if (countdown === 0) {
       if (countdownType === 'start') {
-        void startGame();
+        onStart?.();
       } else if (countdownType === 'reset') {
         void resetGame();
         onResetCompleteRef.current?.();
@@ -46,7 +52,7 @@ export function useCountdown(onResetComplete?: () => void): UseCountdownReturn {
     }, 1000);
 
     return () => clearTimeout(timer);
-  }, [countdown, countdownType]);
+  }, [countdown, countdownType, onStart]);
 
   const startCountdown = useCallback(
     (type: 'start' | 'reset', seconds: number) => {

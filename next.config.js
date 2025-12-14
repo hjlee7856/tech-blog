@@ -6,6 +6,7 @@ const withBundleAnalyzer = bundleAnalyzer({
 });
 
 export default withBundleAnalyzer({
+  reactStrictMode: false,
   staticPageGenerationTimeout: 300,
   images: {
     remotePatterns: [

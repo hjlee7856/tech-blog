@@ -14,7 +14,7 @@ export function useOnlineStatus(userId: number | undefined) {
     const heartbeatId = setInterval(() => {
       if (isCancelled) return;
       void updateOnlineStatus(userId, true);
-    }, 15_000);
+    }, 30_000);
 
     return () => {
       isCancelled = true;

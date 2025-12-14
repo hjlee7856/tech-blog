@@ -3,8 +3,9 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import {
+  addPresenceListener,
+  ensurePresenceSubscribed,
   getPresenceChannel,
-  releasePresenceChannel,
 } from '../BingoGame/hooks/presenceClient';
 
 const TYPING_OFF_DELAY_MS = 7000;
@@ -119,11 +120,13 @@ export function useChatPresence(
       setTypingUsers(uniqueSortedTypingUsers);
     };
 
-    const subscription = channel
-      .on('presence', { event: 'sync' }, () => syncTypingFromPresence())
-      .on('presence', { event: 'join' }, () => syncTypingFromPresence())
-      .on('presence', { event: 'leave' }, () => syncTypingFromPresence())
-      .subscribe((status) => {
+    const removeListener = addPresenceListener({
+      onPresenceChange: () => syncTypingFromPresence(),
+    });
+
+    ensurePresenceSubscribed({
+      userId,
+      onStatus: (status: string) => {
         if (status !== 'SUBSCRIBED') return;
 
         isPresenceSubscribedRef.current = true;
@@ -135,15 +138,15 @@ export function useChatPresence(
           sent_at: new Date().toISOString(),
         });
         syncTypingFromPresence();
-      });
+      },
+    });
 
     return () => {
       isPresenceSubscribedRef.current = false;
       presenceChannelRef.current = null;
       if (typingOffTimeoutRef.current)
         clearTimeout(typingOffTimeoutRef.current);
-      void subscription.unsubscribe();
-      releasePresenceChannel({ userId });
+      removeListener();
       setTypingUsers([]);
     };
   }, [userId, userName, profileImage]);
@@ -154,9 +157,10 @@ export function useChatPresence(
       if (isTypingRef.current === nextIsTyping) return;
       if (!isPresenceSubscribedRef.current) return;
 
+      const channel = presenceChannelRef.current;
+      if (!channel) return;
+
       isTypingRef.current = nextIsTyping;
-      const channel =
-        presenceChannelRef.current ?? getPresenceChannel({ userId });
       void channel.track({
         user_id: userId,
         user_name: userName ?? `user-${userId}`,

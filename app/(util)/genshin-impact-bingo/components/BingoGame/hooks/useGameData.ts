@@ -5,11 +5,10 @@ import { autoLogin, type User } from '../../../lib/auth';
 import {
   getAllPlayers,
   getGameState,
-  getOnlinePlayersRanking,
+  getPlayersRanking,
   nextTurn,
   subscribeToGameState,
   subscribeToPlayers,
-  updateOnlineStatus,
   type GameState,
   type Player,
 } from '../../../lib/game';
@@ -27,7 +26,6 @@ interface UseGameDataReturn {
   players: Player[];
   setPlayers: (players: Player[]) => void;
   isLoading: boolean;
-  hasReportedOnline: boolean;
 }
 
 export function useGameData({
@@ -40,13 +38,11 @@ export function useGameData({
     players,
     isLoading,
     hasInitialized,
-    hasReportedOnline,
     setUser,
     setGameState,
     setPlayers,
     setIsLoading,
     setInitialized,
-    setHasReportedOnline,
   } = useBingoStore();
 
   const isSkippingTurnRef = useRef(false);
@@ -86,8 +82,6 @@ export function useGameData({
     const applyInit = async () => {
       if (authResult.success && authResult.user) {
         setUser(authResult.user);
-        const updated = await updateOnlineStatus(authResult.user.id, true);
-        if (updated) setHasReportedOnline();
       }
 
       setGameState(state);
@@ -105,14 +99,13 @@ export function useGameData({
     setIsLoading,
     setPlayers,
     setUser,
-    setHasReportedOnline,
   ]);
 
   useEffect(() => {
     const gameSubscription = subscribeToGameState(async (state) => {
       setGameState(state);
       if (state.is_finished && state.winner_id) {
-        const ranking = await getOnlinePlayersRanking();
+        const ranking = await getPlayersRanking();
         onGameFinishRef.current(ranking);
       }
     });
@@ -164,6 +157,5 @@ export function useGameData({
     players,
     setPlayers,
     isLoading,
-    hasReportedOnline,
   };
 }

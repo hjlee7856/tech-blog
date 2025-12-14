@@ -4,7 +4,6 @@ import Image from 'next/image';
 import { useEffect, useState } from 'react';
 import { getProfileImagePath } from '../../lib/auth';
 import { getAllPlayers, subscribeToPlayers, type Player } from '../../lib/game';
-import { useOnlineSnapshotUserIds } from '../BingoGame/hooks';
 import {
   Container,
   OnlineDot,
@@ -20,11 +19,11 @@ import {
 
 interface ReadyStatusProps {
   userId?: number;
+  onlineUserIds: number[];
 }
 
-export function ReadyStatus({ userId }: ReadyStatusProps) {
+export function ReadyStatus({ userId, onlineUserIds }: ReadyStatusProps) {
   const [players, setPlayers] = useState<Player[]>([]);
-  const { onlineUserIds } = useOnlineSnapshotUserIds();
 
   useEffect(() => {
     const init = async () => {

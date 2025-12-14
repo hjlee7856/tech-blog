@@ -4,12 +4,16 @@ import Image from 'next/image';
 import { useEffect, useMemo, useState } from 'react';
 import { getProfileImagePath } from '../../lib/auth';
 import {
-  getOnlinePlayersRanking,
+  getAllPlayers,
   subscribeToGameState,
-  subscribeToOnlinePlayersRanking,
+  subscribeToPlayers,
   type Player,
 } from '../../lib/game';
-import { calculateRankMap } from '../../lib/ranking';
+import {
+  calculateRankMap,
+  sortPlayersByCompleteThenScore,
+} from '../../lib/ranking';
+import { useOnlinePresenceUserIds } from '../BingoGame/hooks';
 import {
   AvatarStack,
   AvatarStackItem,
@@ -40,32 +44,54 @@ interface RankingProps {
   isSpectator?: boolean;
 }
 
-export function Ranking({ isGameStarted, userId, isSpectator }: RankingProps) {
-  const [players, setPlayers] = useState<Player[]>([]);
+export function Ranking({ userId, isSpectator, isGameStarted }: RankingProps) {
+  const [allPlayers, setAllPlayers] = useState<Player[]>([]);
+  const [gameState, setGameState] = useState<{
+    is_started?: boolean;
+    is_finished?: boolean;
+  } | null>(null);
   const [isExpanded, setIsExpanded] = useState(false);
+
+  const { onlineUserIds } = useOnlinePresenceUserIds({ userId });
 
   useEffect(() => {
     const init = async () => {
-      const ranking = await getOnlinePlayersRanking();
-      setPlayers(ranking);
+      const players = await getAllPlayers();
+      setAllPlayers(players);
     };
     void init();
 
-    const playerSubscription = subscribeToOnlinePlayersRanking((ranking) => {
-      setPlayers(ranking);
+    const playersSubscription = subscribeToPlayers((players) => {
+      setAllPlayers(players);
     });
 
-    // 게임 상태 변경 시에도 순위 갱신 (게임 시작/종료 시 필터링 로직 변경)
-    const gameStateSubscription = subscribeToGameState(async () => {
-      const ranking = await getOnlinePlayersRanking();
-      setPlayers(ranking);
+    const gameStateSubscription = subscribeToGameState((state) => {
+      setGameState(state);
     });
 
     return () => {
-      void playerSubscription.unsubscribe();
+      void playersSubscription.unsubscribe();
       void gameStateSubscription.unsubscribe();
     };
   }, []);
+
+  const players = useMemo(() => {
+    const isOrderFilterEnabled =
+      (gameState?.is_started ?? false) || (gameState?.is_finished ?? false);
+
+    const onlinePlayers = allPlayers.filter((p) => {
+      if (!onlineUserIds.includes(p.id)) return false;
+      if (isOrderFilterEnabled && p.order <= 0) return false;
+      return true;
+    });
+
+    return sortPlayersByCompleteThenScore(onlinePlayers);
+  }, [
+    allPlayers,
+    gameState?.is_finished,
+    gameState?.is_started,
+    onlineUserIds,
+  ]);
 
   const rankMap = calculateRankMap(players);
 

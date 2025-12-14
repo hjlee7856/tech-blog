@@ -9,13 +9,11 @@ interface BingoState {
   players: Player[];
   isLoading: boolean;
   hasInitialized: boolean;
-  hasReportedOnline: boolean;
   setUser: (user: User | null) => void;
   setGameState: (gameState: GameState | null) => void;
   setPlayers: (players: Player[]) => void;
   setIsLoading: (isLoading: boolean) => void;
   setInitialized: () => void;
-  setHasReportedOnline: () => void;
 }
 
 export const useBingoStore = create<BingoState>((set) => ({
@@ -24,11 +22,9 @@ export const useBingoStore = create<BingoState>((set) => ({
   players: [],
   isLoading: true,
   hasInitialized: false,
-  hasReportedOnline: false,
   setUser: (user) => set({ user }),
   setGameState: (gameState) => set({ gameState }),
   setPlayers: (players) => set({ players }),
   setIsLoading: (isLoading) => set({ isLoading }),
   setInitialized: () => set({ hasInitialized: true }),
-  setHasReportedOnline: () => set({ hasReportedOnline: true }),
 }));

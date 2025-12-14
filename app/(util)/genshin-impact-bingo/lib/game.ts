@@ -1,6 +1,5 @@
 import { supabase } from '@/lib/supabaseClient';
 import type { User } from './auth';
-import { getOnlineUserIds } from './online';
 
 export interface GameState {
   id: number;
@@ -125,15 +124,7 @@ export const BINGO_LINES = [
   [4, 8, 12, 16, 20],
 ];
 
-function isWithinLastSeenGrace(lastSeen: string | null | undefined): boolean {
-  if (!lastSeen) return false;
-
-  const timestamp = new Date(lastSeen).getTime();
-  if (Number.isNaN(timestamp)) return false;
-
-  const diff = Date.now() - timestamp;
-  return diff <= OFFLINE_GRACE_MS;
-}
+const REQUEST_MESSAGE_PREFIX = '__REQUEST__:';
 
 export async function getGameState(): Promise<GameState | null> {
   try {
@@ -151,7 +142,13 @@ export async function getGameState(): Promise<GameState | null> {
   }
 }
 
-export async function startGame(forceStart = false): Promise<{
+export async function startGame({
+  forceStart = false,
+  onlineUserIds = [],
+}: {
+  forceStart?: boolean;
+  onlineUserIds?: number[];
+} = {}): Promise<{
   success: boolean;
   error?: string;
 }> {
@@ -161,7 +158,7 @@ export async function startGame(forceStart = false): Promise<{
     (p) =>
       p.board.filter((item) => item !== null && item !== '').length === 25 &&
       p.is_ready &&
-      isWithinLastSeenGrace(p.last_seen),
+      (onlineUserIds.length === 0 || onlineUserIds.includes(p.id)),
   );
 
   if (eligiblePlayers.length === 0) {
@@ -304,6 +301,7 @@ export async function drawName(
 
 export async function nextTurn(
   expectedCurrentOrder?: number,
+  onlineUserIds: number[] = [],
 ): Promise<boolean> {
   const { data: rawState, error: stateError } = await supabase
     .from('genshin-bingo-game-state')
@@ -322,10 +320,7 @@ export async function nextTurn(
     return false;
   }
 
-  const [players, onlineUserIds] = await Promise.all([
-    getAllPlayers(),
-    getOnlineUserIds(),
-  ]);
+  const players = await getAllPlayers();
 
   // 게임에 참여 중인(order > 0) 플레이어들
   const orderedPlayers = players
@@ -341,23 +336,10 @@ export async function nextTurn(
     return false;
   }
 
-  // 온라인 스냅샷 + last_seen 기반으로 유효 플레이어 필터링
   const activePlayers =
     onlineUserIds.length > 0
-      ? orderedPlayers.filter(
-          (p) =>
-            onlineUserIds.includes(p.id) && isWithinLastSeenGrace(p.last_seen),
-        )
-      : orderedPlayers.filter((p) => isWithinLastSeenGrace(p.last_seen));
-
-  // presence/last_seen 기준으로 유효한 플레이어가 한 명도 없으면 게임을 종료 상태로 전환
-  if (activePlayers.length === 0) {
-    await supabase
-      .from('genshin-bingo-game-state')
-      .update({ is_started: false, is_finished: true })
-      .eq('id', GAME_STATE_ID);
-    return false;
-  }
+      ? orderedPlayers.filter((p) => onlineUserIds.includes(p.id))
+      : orderedPlayers;
 
   // 현재 플레이어의 인덱스 찾기
   const currentIndex = activePlayers.findIndex(
@@ -383,9 +365,12 @@ export async function nextTurn(
 // 현재 턴 검증 및 자동 턴 넘기기
 // - 게임 상태가 없거나 이미 종료된 경우: 아무 것도 하지 않음
 // - 참여 중인 플레이어(order > 0)가 하나도 없는 경우: 아무 것도 하지 않음
-// - 현재 턴에 해당하는 플레이어가 아예 없으면 비정상 상태로 보고 턴을 넘김
-// - OFFLINE_GRACE_MS 이후, 최신 온라인 스냅샷에 현재 턴 플레이어가 없으면 오프라인으로 간주하고 턴을 넘김
-export async function validateAndAutoAdvanceTurn(): Promise<{
+// - OFFLINE_GRACE_MS 이후, presence 기반 onlineUserIds에 현재 턴 플레이어가 없으면 오프라인으로 간주하고 턴을 넘김
+export async function validateAndAutoAdvanceTurn({
+  onlineUserIds,
+}: {
+  onlineUserIds: number[];
+}): Promise<{
   advanced: boolean;
   reason?: string;
 }> {
@@ -402,14 +387,12 @@ export async function validateAndAutoAdvanceTurn(): Promise<{
 
   if (gameState.is_finished) return { advanced: false, reason: 'finished' };
 
-  const [players, onlineUserIds] = await Promise.all([
-    getAllPlayers(),
-    getOnlineUserIds(),
-  ]);
+  const players = await getAllPlayers();
 
-  const activePlayers = players.filter(
-    (p) => p.order > 0 && isWithinLastSeenGrace(p.last_seen),
-  );
+  const activePlayers =
+    onlineUserIds.length > 0
+      ? players.filter((p) => p.order > 0 && onlineUserIds.includes(p.id))
+      : players.filter((p) => p.order > 0);
   if (activePlayers.length === 0)
     return { advanced: false, reason: 'no_active_players' };
 
@@ -417,11 +400,8 @@ export async function validateAndAutoAdvanceTurn(): Promise<{
     (p) => p.order === gameState.current_order,
   );
 
-  // 현재 턴에 해당하는 플레이어가 아예 없으면 비정상 상태로 보고 턴을 넘김
   if (!currentPlayer) {
-    const moved = await nextTurn(gameState.current_order);
-    // 턴이 넘어갈 때, 이전 턴 플레이어를 순서에서 제거하여
-    // 이후 재참여 시 맨 뒤에서 다시 합류하도록 처리
+    const moved = await nextTurn(gameState.current_order, onlineUserIds);
     const previousCurrentPlayer = players.find(
       (p) => p.order === gameState.current_order,
     );
@@ -441,21 +421,16 @@ export async function validateAndAutoAdvanceTurn(): Promise<{
     if (!Number.isNaN(diff)) elapsed = diff;
   }
 
-  // 아직 오프라인 유예 시간 내라면, 스냅샷이 불안정해도 턴 유지
   if (elapsed < OFFLINE_GRACE_MS)
     return { advanced: false, reason: 'grace_period' };
 
-  // 유예 시간이 지난 뒤에는, 최신 온라인 스냅샷 + last_seen 기준으로 오프라인 판정
   const isCurrentOnline =
-    onlineUserIds.includes(currentPlayer.id) &&
-    isWithinLastSeenGrace(currentPlayer.last_seen);
+    onlineUserIds.length === 0 || onlineUserIds.includes(currentPlayer.id);
 
   if (isCurrentOnline) return { advanced: false, reason: 'turn_valid' };
 
-  const moved = await nextTurn(gameState.current_order);
+  const moved = await nextTurn(gameState.current_order, onlineUserIds);
 
-  // 현재 턴 플레이어가 오프라인으로 판정되어 턴이 넘어간 경우,
-  // 해당 플레이어를 순서에서 제거하여 이후 재참여 시 맨 뒤로 합류하게 함
   await updatePlayerOrder(currentPlayer.id, 0);
 
   return {
@@ -541,52 +516,6 @@ export async function getPlayersRanking(): Promise<Player[]> {
 
   if (error) return [];
   return (data || []) as Player[];
-}
-
-// 게임 참여 플레이어 순위 조회
-// - presence/online snapshot 기반 온라인 유저(onlineUserIds)에 포함된 플레이어만 대상으로 함
-// - 게임 시작 후/종료 후에는 order > 0인 플레이어만 집계
-// - 25칸 완성자(12줄 빙고)가 최우선, 그 다음 score 기준
-export async function getOnlinePlayersRanking(): Promise<Player[]> {
-  const gameState = await getGameState();
-
-  const [{ data, error }, onlineUserIds] = await Promise.all([
-    supabase
-      .from('genshin-bingo-game-user')
-      .select(
-        'id, name, score, order, board, is_admin, is_ready, last_seen, bingo_message, bingo_message_at, profile_image',
-      ),
-    getOnlineUserIds(),
-  ]);
-
-  if (error) return [];
-
-  // presence/상위 레이어에서 제공하는 온라인 유저 목록을 기준으로 필터링
-  let filteredPlayers = (data || []) as Player[];
-
-  filteredPlayers = filteredPlayers.filter((p) => onlineUserIds.includes(p.id));
-
-  // 게임 시작 후 또는 종료 후에는 order > 0인 플레이어만
-  if (gameState?.is_started || gameState?.is_finished) {
-    filteredPlayers = filteredPlayers.filter((p) => p.order > 0);
-  }
-
-  // 25칸 완성자를 최우선으로 정렬
-  return filteredPlayers.toSorted((a, b) => {
-    // 실제 캐릭터 수 확인
-    const aValidBoard = a.board.filter((item) => item && item !== '');
-    const bValidBoard = b.board.filter((item) => item && item !== '');
-
-    const aComplete = aValidBoard.length === 25 && a.score === 12;
-    const bComplete = bValidBoard.length === 25 && b.score === 12;
-
-    // 25칸 완성자(12줄)가 최우선
-    if (aComplete && !bComplete) return -1;
-    if (!aComplete && bComplete) return 1;
-
-    // 그 외에는 score 기준
-    return b.score - a.score;
-  });
 }
 
 export async function deletePlayer(userId: number): Promise<boolean> {
@@ -876,7 +805,16 @@ export function subscribeToPlayers(callback: (players: Player[]) => void) {
     .on(
       'postgres_changes',
       { event: '*', schema: 'public', table: 'genshin-bingo-game-user' },
-      async () => {
+      async (payload) => {
+        if (
+          payload.eventType === 'UPDATE' &&
+          isOnlyLastSeenChanged({
+            nextRow: payload.new as Record<string, unknown> | null,
+            prevRow: payload.old as Record<string, unknown> | null,
+          })
+        )
+          return;
+
         const players = await getAllPlayers();
         callback(players);
       },
@@ -884,21 +822,23 @@ export function subscribeToPlayers(callback: (players: Player[]) => void) {
     .subscribe();
 }
 
-export function subscribeToOnlinePlayersRanking(
-  callback: (players: Player[]) => void,
-) {
-  const channelName = `online-ranking-${Math.random().toString(36).slice(7)}`;
-  return supabase
-    .channel(channelName)
-    .on(
-      'postgres_changes',
-      { event: '*', schema: 'public', table: 'genshin-bingo-game-user' },
-      async () => {
-        const players = await getOnlinePlayersRanking();
-        callback(players);
-      },
-    )
-    .subscribe();
+function isOnlyLastSeenChanged({
+  nextRow,
+  prevRow,
+}: {
+  nextRow: Record<string, unknown> | null;
+  prevRow: Record<string, unknown> | null;
+}): boolean {
+  if (!nextRow || !prevRow) return false;
+
+  const nextEntries = Object.entries(nextRow);
+  const changedKeys = nextEntries
+    .filter(([key, value]) => prevRow[key] !== value)
+    .map(([key]) => key);
+
+  if (changedKeys.length === 0) return false;
+  if (changedKeys.length === 1) return changedKeys[0] === 'last_seen';
+  return changedKeys.every((key) => key === 'last_seen');
 }
 
 // 게임 시작 요청 (모든 준비 완료 유저의 동의 필요)
@@ -1132,9 +1072,6 @@ export async function sendChatMessage(
 
   return !error;
 }
-
-// 특별 요청 메시지 전송 (채팅 문자열에 메타데이터 인코딩)
-const REQUEST_MESSAGE_PREFIX = 'REQUEST::';
 
 export function buildRequestMessage({
   characterKey,

@@ -11,9 +11,10 @@ import {
 import {
   checkAndUpdateAllScores,
   checkGameFinish,
+  checkStartRequestTimeout,
   getAllPlayers,
   getGameState,
-  getOnlinePlayersRanking,
+  getPlayersRanking,
   joinGameInProgress,
   nextTurn,
   OFFLINE_GRACE_MS,
@@ -21,6 +22,8 @@ import {
   selectDrawName,
   startGame,
   toggleReady,
+  validateAndAutoAdvanceTurn,
+  validateStartRequest,
   type Player,
 } from '../../lib/game';
 import { BingoBoard, type BingoBoardActions } from '../BingoBoard/BingoBoard';
@@ -75,12 +78,7 @@ import { ModeSelectModal } from '../ModeSelectModal';
 import { NicknameChangeModal } from '../NicknameChangeModal';
 import { ReadyStatus } from '../ReadyStatus';
 import { AdminMenu } from './AdminMenu';
-import {
-  useGameData,
-  useOnlineSnapshotUserIds,
-  useOnlineStatus,
-  useStartRequestWatcher,
-} from './hooks';
+import { useGameData, useOnlinePresenceUserIds } from './hooks';
 import { FinishModal } from './modals';
 
 interface BingoGameProps {
@@ -130,25 +128,34 @@ export function BingoGame({
     [handleGameFinish, handleAloneInGame],
   );
 
-  const {
-    user,
-    setUser,
-    gameState,
-    players,
-    setPlayers,
-    isLoading,
-    hasReportedOnline,
-  } = useGameData(gameDataCallbacks);
+  const { user, setUser, gameState, players, setPlayers, isLoading } =
+    useGameData(gameDataCallbacks);
 
-  // 스냅샷 기반 온라인 유저 목록 (genshin-bingo-online-snapshot) 기준으로 대기
-  const { onlineUserIds } = useOnlineSnapshotUserIds({ userId: user?.id });
+  const { onlineUserIds, isPresenceSubscribed } = useOnlinePresenceUserIds({
+    userId: user?.id,
+    userName: user?.name,
+    profileImage: user?.profile_image,
+  });
   const isOnlineReady =
-    !user || hasReportedOnline || onlineUserIds.includes(user.id);
+    !user || isPresenceSubscribed || onlineUserIds.includes(user.id);
 
-  useOnlineStatus(user?.id);
+  const leaderUserId = onlineUserIds.length > 0 ? onlineUserIds[0] : null;
+  const isLeader = !!user?.id && leaderUserId === user.id;
 
-  // 게임 시작 요청 타임아웃/유효성 체크 훅
-  useStartRequestWatcher();
+  useEffect(() => {
+    if (!isLeader) return;
+    if (!isPresenceSubscribed) return;
+
+    const intervalId = setInterval(() => {
+      void validateAndAutoAdvanceTurn({ onlineUserIds });
+      void checkStartRequestTimeout();
+      void validateStartRequest();
+    }, 5000);
+
+    return () => {
+      clearInterval(intervalId);
+    };
+  }, [isLeader, isPresenceSubscribed, onlineUserIds]);
 
   // 2명 이상 준비 시 바로 시작
   const isStartingRef = useRef(false);
@@ -166,6 +173,7 @@ export function BingoGame({
 
     if (!gameState || gameState.is_started) return;
     if (isStartingRef.current) return;
+    if (!isLeader) return;
 
     const readyPlayers = players.filter(
       (p) =>
@@ -183,7 +191,7 @@ export function BingoGame({
       startGameTimeoutRef.current = setTimeout(() => {
         if (isStartingRef.current || gameState.is_started) return;
         isStartingRef.current = true;
-        void startGame().finally(() => {
+        void startGame({ onlineUserIds }).finally(() => {
           isStartingRef.current = false;
         });
       }, 500);
@@ -194,7 +202,7 @@ export function BingoGame({
         clearTimeout(startGameTimeoutRef.current);
       }
     };
-  }, [gameState, players]);
+  }, [gameState, isLeader, onlineUserIds, players]);
 
   const handleLogin = async (loggedInUser: User) => {
     setUser(loggedInUser);
@@ -322,7 +330,7 @@ export function BingoGame({
       if (finishResult.finished) {
         // 우승자 확정 시에도 점수를 최신 상태로 반영 (예: 12줄 빙고)
         await checkAndUpdateAllScores(newDrawnNames);
-        const ranking = await getOnlinePlayersRanking();
+        const ranking = await getPlayersRanking();
         setFinalRanking(ranking);
         setShowFinishModal(true);
         setIsDrawing(false);
@@ -667,7 +675,7 @@ export function BingoGame({
 
       {/* 게임 시작 전: 준비 상태, 게임 시작 후: 실시간 순위 */}
       {!gameState?.is_started ? (
-        <ReadyStatus userId={user.id} />
+        <ReadyStatus userId={user.id} onlineUserIds={onlineUserIds} />
       ) : (
         <Ranking isGameStarted={gameState?.is_started} userId={user.id} />
       )}
@@ -755,7 +763,12 @@ export function BingoGame({
       {user.is_admin && (
         <AdminMenu
           isGameStarted={gameState?.is_started ?? false}
-          onForceStart={() => void startGame(true)}
+          onForceStart={() =>
+            void startGame({
+              forceStart: true,
+              onlineUserIds,
+            })
+          }
           onResetGame={() => setShowResetConfirm(true)}
           onSkipTurn={handleSkipTurn}
           canForceStart={
