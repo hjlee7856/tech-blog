@@ -5,11 +5,12 @@ import {
   useMemo,
   useRef,
   useState,
-  type CSSProperties,
   type MutableRefObject,
 } from 'react';
 
 import { supabase } from '@/lib/supabaseClient';
+
+import { styles } from './styles';
 
 interface LoadTestConfig {
   virtualUsers: number;
@@ -47,6 +48,14 @@ interface OpStats {
   msSamples: number[];
 }
 
+type HealthLevel = 'good' | 'warn' | 'bad';
+
+interface HealthSummary {
+  level: HealthLevel;
+  title: string;
+  detail: string;
+}
+
 const DEFAULT_CONFIG: LoadTestConfig = {
   virtualUsers: 25,
   intervalMs: 800,
@@ -60,6 +69,58 @@ const DEFAULT_CONFIG: LoadTestConfig = {
 
 const SAMPLE_WINDOW = 400;
 const LOG_WINDOW = 120;
+
+const EVENT_PRESETS = {
+  readOnly25: {
+    label: '25명: 읽기 위주',
+    config: {
+      virtualUsers: 25,
+      intervalMs: 1000,
+      jitterMs: 500,
+      includeGameState: true,
+      includePlayers: true,
+      includeChat: false,
+      enableWrites: false,
+      writeRatio: 0.0,
+    },
+    note: '게임 대기/진행 중 클라이언트가 주로 하는 select 부하를 재현',
+  },
+  readChat25: {
+    label: '25명: 읽기 + 채팅 조회',
+    config: {
+      virtualUsers: 25,
+      intervalMs: 1200,
+      jitterMs: 600,
+      includeGameState: true,
+      includePlayers: true,
+      includeChat: true,
+      enableWrites: false,
+      writeRatio: 0.0,
+    },
+    note: '채팅 리스트 조회(select)까지 포함한 읽기 부하',
+  },
+  writeLight25: {
+    label: '25명: 가벼운 쓰기',
+    config: {
+      virtualUsers: 25,
+      intervalMs: 1500,
+      jitterMs: 700,
+      includeGameState: true,
+      includePlayers: true,
+      includeChat: false,
+      enableWrites: true,
+      writeRatio: 0.1,
+    },
+    note: '이벤트성으로 간헐적인 update(last_seen/bingo_message)까지 포함',
+  },
+} satisfies Record<
+  string,
+  {
+    label: string;
+    note: string;
+    config: LoadTestConfig;
+  }
+>;
 
 export default function Page() {
   const [config, setConfig] = useState<LoadTestConfig>(DEFAULT_CONFIG);
@@ -117,12 +178,15 @@ export default function Page() {
       : 1;
     const rps = (totals.total / elapsedMs) * 1000;
 
+    const errorRate = totals.total > 0 ? totals.error / totals.total : 0;
+
     const opStats = statsRef.current;
 
     return {
       now,
       elapsedMs,
       rps,
+      errorRate,
       totals: { ...totals },
       perOp: {
         game_state: computeStatsView(opStats.game_state),
@@ -135,7 +199,58 @@ export default function Page() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tick]);
 
+  const health = useMemo((): HealthSummary => {
+    if (!isRunning)
+      return {
+        level: 'good',
+        title: '대기',
+        detail: '테스트를 시작하면 판정이 표시됩니다.',
+      };
+
+    if (metrics.totals.total < 30)
+      return {
+        level: 'warn',
+        title: '워밍업',
+        detail: '표본이 적습니다. 30회 이상 누적 후 판단해 주세요.',
+      };
+
+    const p95Candidates = [
+      metrics.perOp.game_state.p95,
+      metrics.perOp.players.p95,
+      metrics.perOp.chat.p95,
+    ].flatMap((v) => (typeof v === 'number' ? [v] : []));
+
+    const maxP95 = p95Candidates.length > 0 ? Math.max(...p95Candidates) : 0;
+    const errorRate = metrics.errorRate;
+
+    if (errorRate >= 0.02 || maxP95 >= 2000)
+      return {
+        level: 'bad',
+        title: '위험',
+        detail: `에러율 ${(errorRate * 100).toFixed(2)}% 또는 p95 ${Math.round(maxP95)}ms가 높습니다. 무료 플랜에서 불안정할 수 있습니다.`,
+      };
+
+    if (errorRate >= 0.005 || maxP95 >= 1200)
+      return {
+        level: 'warn',
+        title: '주의',
+        detail: `에러율 ${(errorRate * 100).toFixed(2)}% 또는 p95 ${Math.round(maxP95)}ms가 상승 중입니다. 이벤트 당일 채팅/요청 폭주를 조심하세요.`,
+      };
+
+    return {
+      level: 'good',
+      title: '양호',
+      detail: `에러율 ${(errorRate * 100).toFixed(2)}%, p95 최대 ${Math.round(maxP95)}ms`,
+    };
+  }, [isRunning, metrics]);
+
   const userIds = useMemo(() => parseUserIds(userIdsInput), [userIdsInput]);
+
+  const applyPreset = (key: keyof typeof EVENT_PRESETS) => {
+    const preset = EVENT_PRESETS[key];
+    if (!preset) return;
+    setConfig(preset.config);
+  };
 
   const start = async () => {
     if (isRunningRef.current) return;
@@ -219,6 +334,31 @@ export default function Page() {
             브라우저 한 탭에서 가상 유저를 만들어 Supabase 쿼리를 반복
             실행합니다
           </div>
+
+          <div style={styles.subCardTitle}>25인 기준 판정</div>
+          <div
+            style={{
+              ...styles.healthBox,
+              ...(health.level === 'good'
+                ? styles.healthGood
+                : health.level === 'warn'
+                  ? styles.healthWarn
+                  : styles.healthBad),
+            }}
+          >
+            <div style={styles.healthTitleRow}>
+              <div style={styles.healthTitle}>{health.title}</div>
+              <div style={styles.healthBadge}>{health.level.toUpperCase()}</div>
+            </div>
+            <div style={styles.healthDetail}>{health.detail}</div>
+            <div style={styles.healthDetail}>
+              권장 기준(가이드):
+              <div style={{ marginTop: 6 }}>
+                - 에러율 0.5% 미만 & p95 1200ms 미만: 대체로 OK
+              </div>
+              <div>- 에러율 2% 이상 또는 p95 2000ms 이상: 위험 신호</div>
+            </div>
+          </div>
         </div>
 
         <div style={styles.actions}>
@@ -257,6 +397,25 @@ export default function Page() {
       <section style={styles.grid}>
         <div style={styles.card}>
           <div style={styles.cardTitle}>설정</div>
+
+          <div style={styles.subCardTitle}>25인(송년회) 프리셋</div>
+          <div style={styles.presetGrid}>
+            {Object.entries(EVENT_PRESETS).map(([key, preset]) => (
+              <button
+                key={key}
+                type="button"
+                disabled={isRunning}
+                onClick={() => applyPreset(key as keyof typeof EVENT_PRESETS)}
+                style={{
+                  ...styles.button,
+                  ...(isRunning ? styles.buttonDisabled : styles.buttonGhost),
+                }}
+                title={preset.note}
+              >
+                {preset.label}
+              </button>
+            ))}
+          </div>
 
           <div style={styles.formGrid}>
             <label style={styles.label}>
@@ -486,6 +645,19 @@ export default function Page() {
             시작 전에 실제 게임 페이지를 25명으로 띄우는 대신, 여기서 “읽기
             부하”를 재현할 수 있습니다. (쓰기 부하는 일부러 넣지 않았습니다)
           </div>
+
+          <div style={styles.hint}>
+            25인 이벤트 기준 권장 흐름:
+            <div style={{ marginTop: 6 }}>
+              1) "25명: 읽기 위주"로 1~2분 실행
+            </div>
+            <div>2) 채팅도 자주 쓰면 "25명: 읽기 + 채팅 조회"로 1~2분 실행</div>
+            <div>3) enableWrites는 테스트 계정에만 사용 (userIds 필수)</div>
+            <div style={{ marginTop: 6 }}>
+              무료 플랜 안정성은 보통 "error 증가" 또는 "ms(p95) 급증"으로 먼저
+              드러납니다.
+            </div>
+          </div>
         </div>
 
         <div style={styles.card}>
@@ -570,6 +742,32 @@ export default function Page() {
                 )}
               </div>
             ))}
+          </div>
+        </div>
+
+        <div style={{ ...styles.card, ...styles.fullWidth }}>
+          <div style={styles.cardTitle}>게임 로직 Smoke Test 체크리스트</div>
+          <div style={styles.hint}>
+            아래 항목이 모두 통과하면(특히 자동 시작/종료/리셋) 이벤트 당일 운영
+            리스크가 크게 줄어듭니다.
+            <div style={{ marginTop: 10, display: 'grid', gap: 8 }}>
+              <div>
+                1) 온라인 2명 이상 + 보드 25칸 완성 → (온라인 보드완성자 전원)
+                준비 완료 시 자동 시작
+              </div>
+              <div>
+                2) 온라인 보드완성자 중 1명이라도 준비 안 함 → 자동 시작 안 됨
+                (관리자 강제 시작으로만 시작)
+              </div>
+              <div>
+                3) 게임 종료(승리) 시 종료 모달에 “게임 참가자(order&gt;0)”만
+                랭킹 표시
+              </div>
+              <div>4) 관리자 게임 초기화(reset) 시 종료 모달이 즉시 닫힘</div>
+              <div>
+                5) 빠른 채팅 연타 시 rate limit으로 과부하 방지 동작 확인
+              </div>
+            </div>
           </div>
         </div>
       </section>
@@ -1183,229 +1381,3 @@ function formatTime(ts: number) {
   const ss = String(d.getSeconds()).padStart(2, '0');
   return `${hh}:${mm}:${ss}`;
 }
-
-const styles: Record<string, CSSProperties> = {
-  page: {
-    padding: 20,
-    maxWidth: 1200,
-    margin: '0 auto',
-  },
-  header: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    gap: 16,
-    alignItems: 'flex-start',
-    marginBottom: 16,
-  },
-  title: {
-    fontSize: 22,
-    fontWeight: 700,
-    lineHeight: 1.2,
-  },
-  subTitle: {
-    marginTop: 6,
-    fontSize: 13,
-    opacity: 0.8,
-  },
-  actions: {
-    display: 'flex',
-    gap: 10,
-    alignItems: 'center',
-  },
-  button: {
-    padding: '10px 14px',
-    borderRadius: 10,
-    borderWidth: 1,
-    borderStyle: 'solid',
-    borderColor: 'rgba(255,255,255,0.14)',
-    background: 'rgba(255,255,255,0.06)',
-    color: 'black',
-    cursor: 'pointer',
-    fontWeight: 600,
-  },
-  buttonPrimary: {
-    background: '#2563eb',
-    borderColor: '#2563eb',
-  },
-  buttonDanger: {
-    background: '#dc2626',
-    borderColor: '#dc2626',
-  },
-  buttonGhost: {
-    background: 'rgba(255,255,255,0.06)',
-  },
-  buttonDisabled: {
-    opacity: 0.5,
-    cursor: 'not-allowed',
-  },
-  grid: {
-    display: 'grid',
-    gridTemplateColumns: 'repeat(2, minmax(0, 1fr))',
-    gap: 12,
-  },
-  card: {
-    border: '1px solid rgba(255,255,255,0.10)',
-    background: 'rgba(255,255,255,0.04)',
-    borderRadius: 14,
-    padding: 14,
-  },
-  fullWidth: {
-    gridColumn: '1 / -1',
-  },
-  cardTitle: {
-    fontSize: 14,
-    fontWeight: 700,
-    marginBottom: 12,
-  },
-  subCardTitle: {
-    fontSize: 13,
-    fontWeight: 700,
-    marginTop: 14,
-    marginBottom: 8,
-    opacity: 0.9,
-  },
-  formGrid: {
-    display: 'grid',
-    gridTemplateColumns: 'repeat(3, minmax(0, 1fr))',
-    gap: 10,
-  },
-  label: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: 6,
-    fontSize: 12,
-    opacity: 0.9,
-  },
-  input: {
-    padding: '10px 10px',
-    borderRadius: 10,
-    border: '1px solid rgba(255,255,255,0.12)',
-    background: 'rgba(0,0,0,0.25)',
-    color: '#fff',
-  },
-  checkboxCol: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: 8,
-    justifyContent: 'flex-end',
-  },
-  checkboxLabel: {
-    display: 'flex',
-    gap: 8,
-    alignItems: 'center',
-    fontSize: 12,
-  },
-  hint: {
-    marginTop: 12,
-    fontSize: 12,
-    opacity: 0.75,
-    lineHeight: 1.5,
-  },
-  writeRow: {
-    display: 'grid',
-    gridTemplateColumns: '240px 1fr 1fr',
-    gap: 10,
-    marginTop: 10,
-    alignItems: 'end',
-  },
-  hintSmall: {
-    fontSize: 12,
-    opacity: 0.75,
-    lineHeight: 1.4,
-  },
-  testUsersSection: {
-    marginTop: 12,
-    paddingTop: 12,
-    borderTop: '1px solid rgba(255,255,255,0.08)',
-  },
-  testUsersTitle: {
-    fontSize: 13,
-    fontWeight: 800,
-    marginBottom: 8,
-  },
-  testUsersActions: {
-    display: 'flex',
-    gap: 8,
-    flexWrap: 'wrap',
-  },
-  testUsersStatus: {
-    marginTop: 8,
-    fontSize: 12,
-  },
-  kvGrid: {
-    display: 'grid',
-    gridTemplateColumns: 'repeat(3, minmax(0, 1fr))',
-    gap: 10,
-  },
-  k: {
-    fontSize: 11,
-    opacity: 0.7,
-  },
-  v: {
-    fontSize: 16,
-    fontWeight: 700,
-  },
-  vSmall: {
-    fontSize: 12,
-    fontWeight: 600,
-    opacity: 0.9,
-    wordBreak: 'break-word',
-  },
-  opRow: {
-    borderTop: '1px solid rgba(255,255,255,0.08)',
-    paddingTop: 10,
-    marginTop: 10,
-  },
-  opName: {
-    fontSize: 13,
-    fontWeight: 800,
-    marginBottom: 8,
-  },
-  opMetrics: {
-    display: 'grid',
-    gridTemplateColumns: 'repeat(7, minmax(0, 1fr))',
-    gap: 10,
-  },
-  opLastError: {
-    marginTop: 8,
-    fontSize: 12,
-    opacity: 0.8,
-    whiteSpace: 'nowrap',
-    overflow: 'hidden',
-    textOverflow: 'ellipsis',
-  },
-  logBox: {
-    borderRadius: 12,
-    border: '1px solid rgba(255,255,255,0.10)',
-    background: 'rgba(0,0,0,0.22)',
-    padding: 10,
-    minHeight: 220,
-    maxHeight: 420,
-    overflow: 'auto',
-    fontFamily:
-      'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace',
-    fontSize: 12,
-  },
-  logEmpty: {
-    opacity: 0.7,
-  },
-  logRow: {
-    display: 'grid',
-    gridTemplateColumns: '78px 100px 60px 70px 1fr',
-    gap: 10,
-    alignItems: 'center',
-    padding: '6px 0',
-    borderBottom: '1px solid rgba(255,255,255,0.06)',
-  },
-  logAt: { opacity: 0.85 },
-  logOp: { opacity: 0.9 },
-  logOk: { color: '#22c55e', fontWeight: 800 },
-  logErr: { color: '#ef4444', fontWeight: 800 },
-  logMs: { opacity: 0.9 },
-  logMsg: {
-    opacity: 0.85,
-    overflow: 'hidden',
-    textOverflow: 'ellipsis',
-    whiteSpace: 'nowrap',
-  },
-};

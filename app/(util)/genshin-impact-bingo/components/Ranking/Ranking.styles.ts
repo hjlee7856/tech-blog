@@ -4,14 +4,20 @@ export const Container = styled('div', {
   base: {
     width: '100%',
     maxWidth: '100%',
-    backgroundColor: '#2B2D31',
+    height: '100%',
+    backgroundColor: 'var(--bingo-surface)',
     borderRadius: '12px',
     padding: '12px',
-    marginTop: '16px',
+    marginTop: '0px',
+    display: 'flex',
+    flexDirection: 'column',
+    flex: 1,
+    minHeight: 0,
     md: {
       maxWidth: '600px',
+      height: '100%',
       padding: '16px',
-      marginTop: '20px',
+      marginTop: '0px',
     },
   },
   variants: {
@@ -28,7 +34,7 @@ export const Title = styled('h3', {
   base: {
     fontSize: '14px',
     fontWeight: 'bold',
-    color: 'white',
+    color: 'var(--bingo-text)',
     marginBottom: '10px',
     textAlign: 'center',
     md: {
@@ -43,6 +49,9 @@ export const RankList = styled('div', {
     display: 'flex',
     flexDirection: 'column',
     gap: '8px',
+    flex: 1,
+    minHeight: 0,
+    overflowY: 'auto',
   },
 });
 
@@ -52,7 +61,8 @@ export const RankItem = styled('div', {
     alignItems: 'center',
     justifyContent: 'space-between',
     padding: '6px 10px',
-    backgroundColor: '#3F4147',
+    backgroundColor: 'var(--bingo-surface-2)',
+    color: 'var(--bingo-text)',
     borderRadius: '6px',
     md: {
       padding: '8px 12px',
@@ -76,7 +86,7 @@ export const RankItem = styled('div', {
     },
     isMe: {
       true: {
-        border: '2px solid #5865F2',
+        border: '2px solid var(--bingo-primary)',
       },
     },
   },
@@ -200,7 +210,7 @@ export const OnlineIndicator = styled('div', {
     width: '8px',
     height: '8px',
     borderRadius: '50%',
-    backgroundColor: '#3BA55C',
+    backgroundColor: 'var(--bingo-success)',
     flexShrink: 0,
   },
 });
@@ -213,10 +223,10 @@ export const ReadyBadge = styled('span', {
   variants: {
     isReady: {
       true: {
-        color: '#3BA55C',
+        color: 'var(--bingo-success)',
       },
       false: {
-        color: '#B5BAC1',
+        color: 'var(--bingo-text-muted)',
       },
     },
   },
@@ -232,15 +242,15 @@ export const ExpandButton = styled('button', {
     marginTop: '8px',
     fontSize: '13px',
     fontWeight: '500',
-    color: '#B5BAC1',
+    color: 'var(--bingo-text-muted)',
     backgroundColor: 'transparent',
-    border: '1px solid #3F4147',
+    border: '1px solid var(--bingo-border)',
     borderRadius: '6px',
     cursor: 'pointer',
     transition: 'all 0.2s',
     _hover: {
-      backgroundColor: '#3F4147',
-      color: 'white',
+      backgroundColor: 'var(--bingo-surface-2)',
+      color: 'var(--bingo-text)',
     },
     md: {
       fontSize: '14px',
@@ -256,14 +266,14 @@ export const BoastButton = styled('button', {
     padding: '4px 8px',
     fontSize: '11px',
     fontWeight: 'bold',
-    color: 'white',
-    backgroundColor: '#5865F2',
+    color: 'var(--bingo-text)',
+    backgroundColor: 'var(--bingo-primary)',
     border: 'none',
     borderRadius: '4px',
     cursor: 'pointer',
     transition: 'all 0.2s',
     _hover: {
-      backgroundColor: '#4752C4',
+      backgroundColor: 'var(--bingo-primary-hover)',
       transform: 'scale(1.05)',
     },
     _disabled: {

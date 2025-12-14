@@ -40,6 +40,7 @@ export function useChatPresence(
     null,
   );
   const isTypingRef = useRef(false);
+  const lastTypingTrackAtRef = useRef(0);
   const isPresenceSubscribedRef = useRef(false);
   const presenceChannelRef = useRef<ReturnType<
     typeof getPresenceChannel
@@ -159,6 +160,10 @@ export function useChatPresence(
 
       const channel = presenceChannelRef.current;
       if (!channel) return;
+
+      const now = Date.now();
+      if (nextIsTyping && now - lastTypingTrackAtRef.current < 1000) return;
+      lastTypingTrackAtRef.current = now;
 
       isTypingRef.current = nextIsTyping;
       void channel.track({

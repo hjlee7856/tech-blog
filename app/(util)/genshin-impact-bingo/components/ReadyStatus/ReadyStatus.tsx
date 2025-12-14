@@ -1,9 +1,9 @@
 'use client';
 
 import Image from 'next/image';
-import { useEffect, useState } from 'react';
+import { useMemo } from 'react';
 import { getProfileImagePath } from '../../lib/auth';
-import { getAllPlayers, subscribeToPlayers, type Player } from '../../lib/game';
+import type { Player } from '../../lib/game';
 import {
   Container,
   OnlineDot,
@@ -19,32 +19,20 @@ import {
 
 interface ReadyStatusProps {
   userId?: number;
+  players: Player[];
   onlineUserIds: number[];
+  isPresenceSubscribed: boolean;
 }
 
-export function ReadyStatus({ userId, onlineUserIds }: ReadyStatusProps) {
-  const [players, setPlayers] = useState<Player[]>([]);
-
-  useEffect(() => {
-    const init = async () => {
-      const allPlayers = await getAllPlayers();
-      setPlayers(allPlayers);
-    };
-
-    void init();
-
-    const subscription = subscribeToPlayers((allPlayers: Player[]) => {
-      // 실시간 변경 시에도 전체 플레이어 목록을 갱신한 뒤 presence로 온라인만 표시
-      setPlayers(allPlayers);
-    });
-
-    return () => {
-      void subscription.unsubscribe();
-    };
-  }, []);
-
-  const visiblePlayers = players.filter((player) =>
-    onlineUserIds.includes(player.id),
+export function ReadyStatus({
+  userId,
+  players,
+  onlineUserIds,
+  isPresenceSubscribed,
+}: ReadyStatusProps) {
+  const visiblePlayers = useMemo(
+    () => players.filter((player) => onlineUserIds.includes(player.id)),
+    [onlineUserIds, players],
   );
 
   return (
@@ -89,7 +77,9 @@ export function ReadyStatus({ userId, onlineUserIds }: ReadyStatusProps) {
         {visiblePlayers.length === 0 && (
           <PlayerItem>
             <PlayerName style={{ textAlign: 'center', color: '#B5BAC1' }}>
-              온라인 참가자가 없습니다
+              {isPresenceSubscribed
+                ? '온라인 참가자가 없습니다'
+                : '온라인 상태 확인 중...'}
             </PlayerName>
           </PlayerItem>
         )}

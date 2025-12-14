@@ -20,7 +20,7 @@ export const Modal = styled('div', {
   base: {
     width: '100%',
     maxWidth: '420px',
-    backgroundColor: '#2B2D31',
+    backgroundColor: 'var(--bingo-surface)',
     borderRadius: '12px',
     padding: '20px',
     display: 'flex',
@@ -33,7 +33,7 @@ export const Title = styled('h2', {
   base: {
     fontSize: '18px',
     fontWeight: 'bold',
-    color: 'white',
+    color: 'var(--bingo-text)',
     margin: 0,
   },
 });
@@ -43,7 +43,7 @@ export const Description = styled('p', {
     margin: 0,
     fontSize: '13px',
     lineHeight: '1.4',
-    color: '#B5BAC1',
+    color: 'var(--bingo-text-muted)',
   },
 });
 
@@ -61,12 +61,12 @@ export const PrimaryButton = styled('button', {
     padding: '12px 14px',
     borderRadius: '10px',
     border: 'none',
-    backgroundColor: '#5865F2',
-    color: 'white',
+    backgroundColor: 'var(--bingo-primary)',
+    color: 'var(--bingo-text)',
     fontWeight: '700',
     cursor: 'pointer',
     _hover: {
-      backgroundColor: '#4752C4',
+      backgroundColor: 'var(--bingo-primary-hover)',
     },
   },
 });
@@ -75,13 +75,13 @@ export const SecondaryButton = styled('button', {
   base: {
     padding: '12px 14px',
     borderRadius: '10px',
-    border: '1px solid #3F4147',
-    backgroundColor: '#1E1F22',
-    color: 'white',
+    border: '1px solid var(--bingo-border)',
+    backgroundColor: 'var(--bingo-page-bg)',
+    color: 'var(--bingo-text)',
     fontWeight: '700',
     cursor: 'pointer',
     _hover: {
-      backgroundColor: '#3F4147',
+      backgroundColor: 'var(--bingo-surface-2)',
     },
   },
 });

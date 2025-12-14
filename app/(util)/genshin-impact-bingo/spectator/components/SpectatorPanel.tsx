@@ -172,7 +172,14 @@ export function SpectatorPanel({
       </GameStatusBar>
 
       <MainContent>
-        <Ranking isGameStarted={gameState?.is_started} isSpectator={true} />
+        <Ranking
+          isGameStarted={gameState?.is_started}
+          isSpectator={true}
+          players={players}
+          gameState={gameState}
+          onlineUserIds={[]}
+          isPresenceSubscribed={true}
+        />
 
         <Chat
           userId={user.id}

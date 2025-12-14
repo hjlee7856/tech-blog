@@ -1,19 +1,13 @@
 'use client';
 
 import Image from 'next/image';
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { getProfileImagePath } from '../../lib/auth';
-import {
-  getAllPlayers,
-  subscribeToGameState,
-  subscribeToPlayers,
-  type Player,
-} from '../../lib/game';
+import type { GameState, Player } from '../../lib/game';
 import {
   calculateRankMap,
   sortPlayersByCompleteThenScore,
 } from '../../lib/ranking';
-import { useOnlinePresenceUserIds } from '../BingoGame/hooks';
 import {
   AvatarStack,
   AvatarStackItem,
@@ -42,42 +36,34 @@ interface RankingProps {
   isGameStarted?: boolean;
   userId?: number;
   isSpectator?: boolean;
+  players: Player[];
+  gameState: GameState | null;
+  onlineUserIds: number[];
+  isPresenceSubscribed: boolean;
 }
 
-export function Ranking({ userId, isSpectator, isGameStarted }: RankingProps) {
-  const [allPlayers, setAllPlayers] = useState<Player[]>([]);
-  const [gameState, setGameState] = useState<{
-    is_started?: boolean;
-    is_finished?: boolean;
-  } | null>(null);
+export function Ranking({
+  userId,
+  isSpectator,
+  isGameStarted,
+  players: allPlayers,
+  gameState,
+  onlineUserIds,
+  isPresenceSubscribed,
+}: RankingProps) {
   const [isExpanded, setIsExpanded] = useState(false);
-
-  const { onlineUserIds } = useOnlinePresenceUserIds({ userId });
-
-  useEffect(() => {
-    const init = async () => {
-      const players = await getAllPlayers();
-      setAllPlayers(players);
-    };
-    void init();
-
-    const playersSubscription = subscribeToPlayers((players) => {
-      setAllPlayers(players);
-    });
-
-    const gameStateSubscription = subscribeToGameState((state) => {
-      setGameState(state);
-    });
-
-    return () => {
-      void playersSubscription.unsubscribe();
-      void gameStateSubscription.unsubscribe();
-    };
-  }, []);
 
   const players = useMemo(() => {
     const isOrderFilterEnabled =
       (gameState?.is_started ?? false) || (gameState?.is_finished ?? false);
+
+    if (isSpectator) {
+      return sortPlayersByCompleteThenScore(allPlayers);
+    }
+
+    if (!isPresenceSubscribed) {
+      return [];
+    }
 
     const onlinePlayers = allPlayers.filter((p) => {
       if (!onlineUserIds.includes(p.id)) return false;
@@ -90,6 +76,8 @@ export function Ranking({ userId, isSpectator, isGameStarted }: RankingProps) {
     allPlayers,
     gameState?.is_finished,
     gameState?.is_started,
+    isPresenceSubscribed,
+    isSpectator,
     onlineUserIds,
   ]);
 

@@ -4,14 +4,14 @@ export const Container = styled('div', {
   base: {
     width: '100%',
     maxWidth: '100%',
-    backgroundColor: '#2B2D31',
+    backgroundColor: 'var(--bingo-surface)',
     borderRadius: '12px',
     padding: '12px',
-    marginTop: '16px',
+    marginTop: '0px',
     md: {
       maxWidth: '600px',
       padding: '16px',
-      marginTop: '20px',
+      marginTop: '0px',
     },
   },
 });
@@ -23,13 +23,13 @@ export const OnlineDot = styled('span', {
     height: '8px',
     borderRadius: '9999px',
     marginRight: '6px',
-    backgroundColor: '#4F545C',
+    backgroundColor: 'var(--bingo-border-2)',
     flexShrink: 0,
   },
   variants: {
     isOnline: {
       true: {
-        backgroundColor: '#3BA55C',
+        backgroundColor: 'var(--bingo-success)',
       },
     },
   },
@@ -39,7 +39,7 @@ export const Title = styled('h3', {
   base: {
     fontSize: '14px',
     fontWeight: 'bold',
-    color: 'white',
+    color: 'var(--bingo-text)',
     marginBottom: '10px',
     textAlign: 'center',
     md: {
@@ -63,7 +63,8 @@ export const PlayerItem = styled('div', {
     alignItems: 'center',
     justifyContent: 'space-between',
     padding: '6px 10px',
-    backgroundColor: '#3F4147',
+    backgroundColor: 'var(--bingo-surface-2)',
+    color: 'var(--bingo-text)',
     borderRadius: '6px',
     md: {
       padding: '8px 12px',
@@ -73,7 +74,7 @@ export const PlayerItem = styled('div', {
   variants: {
     isMe: {
       true: {
-        border: '2px solid #5865F2',
+        border: '2px solid var(--bingo-primary)',
       },
     },
   },
@@ -119,7 +120,7 @@ export const PlayerName = styled('span', {
   base: {
     fontSize: '12px',
     fontWeight: '600',
-    color: '#F2F3F5',
+    color: 'var(--bingo-text)',
     md: {
       fontSize: '13px',
     },
@@ -141,12 +142,12 @@ export const ReadyBadge = styled('span', {
   variants: {
     isReady: {
       true: {
-        backgroundColor: '#3BA55C',
-        color: 'white',
+        backgroundColor: 'var(--bingo-success)',
+        color: 'var(--bingo-text)',
       },
       false: {
-        backgroundColor: '#5865F2',
-        color: 'white',
+        backgroundColor: 'var(--bingo-primary)',
+        color: 'var(--bingo-text)',
       },
     },
   },

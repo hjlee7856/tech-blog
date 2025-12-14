@@ -4,19 +4,23 @@ export const Container = styled('div', {
   base: {
     width: '100%',
     maxWidth: '100%',
-    backgroundColor: '#232428',
-    border: '1px solid #313338',
+    height: '100%',
+    backgroundColor: 'var(--bingo-surface)',
+    border: '1px solid var(--bingo-border)',
     borderRadius: '12px',
     padding: '12px',
-    marginTop: '16px',
+    marginTop: '0px',
     boxShadow: '0 6px 18px rgba(0, 0, 0, 0.25)',
     display: 'flex',
     flexDirection: 'column',
     position: 'relative',
+    flex: 1,
+    minHeight: 0,
     md: {
       maxWidth: '600px',
+      height: '100%',
       padding: '16px',
-      marginTop: '20px',
+      marginTop: '0px',
     },
   },
   variants: {
@@ -39,13 +43,13 @@ export const OnlineDot = styled('span', {
     height: '8px',
     borderRadius: '9999px',
     marginRight: '4px',
-    backgroundColor: '#4F545C',
+    backgroundColor: 'var(--bingo-border-2)',
     flexShrink: 0,
   },
   variants: {
     isOnline: {
       true: {
-        backgroundColor: '#3BA55C',
+        backgroundColor: 'var(--bingo-success)',
       },
     },
   },
@@ -55,7 +59,7 @@ export const Title = styled('h3', {
   base: {
     fontSize: '14px',
     fontWeight: 'bold',
-    color: 'white',
+    color: 'var(--bingo-text)',
     marginBottom: '10px',
     display: 'flex',
     alignItems: 'center',
@@ -71,6 +75,10 @@ export const MessageListWrapper = styled('div', {
   base: {
     position: 'relative',
     marginBottom: '10px',
+    flex: 1,
+    minHeight: 0,
+    display: 'flex',
+    flexDirection: 'column',
   },
 });
 
@@ -79,14 +87,14 @@ export const MessageList = styled('div', {
     display: 'flex',
     flexDirection: 'column',
     gap: '6px',
-    maxHeight: '400px',
+    flex: 1,
+    minHeight: 0,
     overflowY: 'auto',
     padding: '8px',
-    backgroundColor: '#111214',
-    border: '1px solid #2B2D31',
+    backgroundColor: 'var(--bingo-surface-3)',
+    border: '1px solid var(--bingo-surface)',
     borderRadius: '8px',
     md: {
-      maxHeight: '500px',
       gap: '8px',
     },
   },
@@ -99,8 +107,8 @@ export const MessageItem = styled('div', {
     gap: '8px',
     padding: '6px 8px',
     borderRadius: '6px',
-    backgroundColor: '#2B2D31',
-    border: '1px solid #313338',
+    backgroundColor: 'var(--bingo-surface)',
+    border: '1px solid var(--bingo-border)',
     fontSize: '13px',
     lineHeight: '1.35',
     md: {
@@ -112,7 +120,7 @@ export const MessageItem = styled('div', {
     isBoast: {
       true: {
         backgroundColor: 'rgba(255, 215, 0, 0.15)',
-        border: '1px solid #FFD700',
+        border: '1px solid var(--bingo-gold)',
       },
     },
     isMe: {
@@ -121,7 +129,7 @@ export const MessageItem = styled('div', {
     isRequest: {
       true: {
         backgroundColor: 'rgba(88, 101, 242, 0.15)',
-        border: '1px solid #5865F2',
+        border: '1px solid var(--bingo-primary)',
       },
     },
   },
@@ -144,7 +152,7 @@ export const MessageProfile = styled('div', {
   variants: {
     isTyping: {
       true: {
-        borderColor: '#3BA55C',
+        borderColor: 'var(--bingo-success)',
       },
     },
   },
@@ -171,7 +179,7 @@ export const MessageName = styled('span', {
   base: {
     fontSize: '13px',
     fontWeight: 'bold',
-    color: '#DDE0E6',
+    color: 'var(--bingo-text)',
     md: {
       fontSize: '13px',
     },
@@ -184,7 +192,7 @@ export const MessageText = styled('span', {
     alignItems: 'center',
     gap: '6px',
     fontSize: '14px',
-    color: '#F2F3F5',
+    color: 'var(--bingo-text)',
     lineHeight: '1.4',
     wordBreak: 'break-word',
     md: {
@@ -196,7 +204,7 @@ export const MessageText = styled('span', {
 export const MessageTime = styled('span', {
   base: {
     fontSize: '10px',
-    color: '#72767D',
+    color: 'var(--bingo-text-subtle)',
     flexShrink: 0,
     md: {
       fontSize: '11px',
@@ -212,7 +220,7 @@ export const BoastBadge = styled('span', {
     padding: '2px 6px',
     fontSize: '10px',
     fontWeight: 'bold',
-    color: '#FFD700',
+    color: 'var(--bingo-gold)',
     backgroundColor: 'rgba(255, 215, 0, 0.3)',
     borderRadius: '4px',
     md: {
@@ -226,6 +234,9 @@ export const InputSection = styled('div', {
     display: 'flex',
     flexDirection: 'column',
     gap: '8px',
+    borderTop: '1px solid var(--bingo-border)',
+    paddingTop: '10px',
+    marginTop: '10px',
   },
 });
 
@@ -236,7 +247,7 @@ export const TypingIndicator = styled('div', {
     alignItems: 'center',
     gap: '6px',
     fontSize: '12px',
-    color: '#B5BAC1',
+    color: 'var(--bingo-text-muted)',
     paddingLeft: '2px',
   },
 });
@@ -256,7 +267,7 @@ export const TypingAvatar = styled('div', {
     height: '18px',
     borderRadius: '50%',
     overflow: 'hidden',
-    border: '2px solid #2B2D31',
+    border: '2px solid var(--bingo-surface)',
     boxSizing: 'border-box',
     marginLeft: '-6px',
     _first: {
@@ -270,17 +281,16 @@ export const ChatInput = styled('input', {
     flex: 1,
     padding: '10px 12px',
     fontSize: '13px',
-    color: '#F2F3F5',
-    backgroundColor: '#0F1012',
-    border: '1px solid #2B2D31',
+    color: 'var(--bingo-text)',
+    backgroundColor: 'var(--bingo-surface-3)',
+    border: `1px solid rgba(181, 186, 193, 0.55)`,
     borderRadius: '8px',
     outline: 'none',
     _focus: {
-      borderColor: '#5865F2',
-      boxShadow: '0 0 0 3px rgba(88, 101, 242, 0.28)',
+      borderColor: 'var(--bingo-primary)',
     },
     _placeholder: {
-      color: '#72767D',
+      color: 'var(--bingo-text-subtle)',
     },
     md: {
       fontSize: '14px',
@@ -313,9 +323,9 @@ export const RequestButton = styled('button', {
     padding: '8px 10px',
     fontSize: '12px',
     fontWeight: 'bold',
-    color: '#FFFFFF',
+    color: 'var(--bingo-text)',
     backgroundColor: 'rgba(88, 101, 242, 0.25)',
-    border: '1px solid #5865F2',
+    border: '1px solid var(--bingo-primary)',
     borderRadius: '8px',
     cursor: 'pointer',
     transition: 'all 0.2s',
@@ -341,7 +351,7 @@ export const RequestCharacterPanel = styled('div', {
     gap: '8px',
     marginTop: '8px',
     padding: '8px',
-    backgroundColor: '#1E1F22',
+    backgroundColor: 'var(--bingo-page-bg)',
     borderRadius: '8px',
     width: '100%',
   },
@@ -355,14 +365,14 @@ export const RequestCharacterItem = styled('button', {
     justifyContent: 'center',
     gap: '4px',
     padding: '6px',
-    backgroundColor: '#2B2D31',
+    backgroundColor: 'var(--bingo-surface)',
     borderRadius: '8px',
     border: '1px solid transparent',
     cursor: 'pointer',
     width: '100%',
     _hover: {
-      borderColor: '#5865F2',
-      backgroundColor: '#313338',
+      borderColor: 'var(--bingo-primary)',
+      backgroundColor: 'var(--bingo-surface-2)',
     },
   },
 });
@@ -370,7 +380,7 @@ export const RequestCharacterItem = styled('button', {
 export const RequestCharacterLabel = styled('span', {
   base: {
     fontSize: '11px',
-    color: '#B5BAC1',
+    color: 'var(--bingo-text-muted)',
     textAlign: 'center',
   },
 });
@@ -380,15 +390,15 @@ export const SendButton = styled('button', {
     padding: '10px 16px',
     fontSize: '13px',
     fontWeight: 'bold',
-    color: 'white',
-    backgroundColor: '#5865F2',
+    color: 'var(--bingo-text)',
+    backgroundColor: 'var(--bingo-primary)',
     border: 'none',
     borderRadius: '8px',
     cursor: 'pointer',
     transition: 'all 0.2s',
 
     _hover: {
-      backgroundColor: '#4752C4',
+      backgroundColor: 'var(--bingo-primary-hover)',
     },
     _disabled: {
       opacity: 0.6,
@@ -406,9 +416,9 @@ export const BoastButton = styled('button', {
     padding: '8px 10px',
     fontSize: '12px',
     fontWeight: 'bold',
-    color: '#FFD700',
+    color: 'var(--bingo-gold)',
     backgroundColor: 'rgba(255, 215, 0, 0.15)',
-    border: '1px solid #FFD700',
+    border: '1px solid var(--bingo-gold)',
     borderRadius: '8px',
     cursor: 'pointer',
     transition: 'all 0.2s',
@@ -430,7 +440,7 @@ export const BoastButton = styled('button', {
 export const EmptyMessage = styled('div', {
   base: {
     textAlign: 'center',
-    color: '#72767D',
+    color: 'var(--bingo-text-subtle)',
     fontSize: '13px',
     padding: '20px',
     md: {
@@ -454,7 +464,7 @@ export const NewMessageToast = styled('button', {
     borderRadius: '10px',
     border: '1px solid rgba(88, 101, 242, 0.55)',
     backgroundColor: 'rgba(88, 101, 242, 0.18)',
-    color: '#F2F3F5',
+    color: 'var(--bingo-text)',
     fontSize: '12px',
     cursor: 'pointer',
     backdropFilter: 'blur(6px)',
@@ -489,7 +499,7 @@ export const NewMessageToastText = styled('span', {
     overflow: 'hidden',
     textOverflow: 'ellipsis',
     whiteSpace: 'nowrap',
-    color: '#DDE0E6',
+    color: 'var(--bingo-text)',
     flex: 1,
   },
 });
@@ -504,7 +514,7 @@ export const NewMessageToastBadge = styled('span', {
     borderRadius: '9999px',
     fontWeight: 'bold',
     backgroundColor: 'rgba(88, 101, 242, 0.55)',
-    color: '#FFFFFF',
+    color: 'var(--bingo-text)',
     flexShrink: 0,
   },
 });
@@ -518,9 +528,9 @@ export const ScrollToBottomFloatingButton = styled('button', {
     width: '40px',
     height: '40px',
     borderRadius: '9999px',
-    border: '1px solid #2B2D31',
-    backgroundColor: '#111214',
-    color: '#F2F3F5',
+    border: '1px solid var(--bingo-surface)',
+    backgroundColor: 'var(--bingo-surface-3)',
+    color: 'var(--bingo-text)',
     cursor: 'pointer',
     boxShadow: '0 10px 20px rgba(0, 0, 0, 0.35)',
     display: 'inline-flex',
@@ -528,7 +538,7 @@ export const ScrollToBottomFloatingButton = styled('button', {
     justifyContent: 'center',
     transition: 'transform 0.12s ease, background-color 0.12s ease',
     _hover: {
-      backgroundColor: '#1E1F22',
+      backgroundColor: 'var(--bingo-page-bg)',
       transform: 'translateY(-1px)',
     },
     _focusVisible: {

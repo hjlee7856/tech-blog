@@ -17,7 +17,7 @@ export const Backdrop = styled('div', {
 
 export const Modal = styled('div', {
   base: {
-    backgroundColor: '#2B2D31',
+    backgroundColor: 'var(--bingo-surface)',
     borderRadius: '12px',
     padding: '20px',
     width: '90%',
@@ -41,7 +41,7 @@ export const Title = styled('h2', {
   base: {
     fontSize: '18px',
     fontWeight: 'bold',
-    color: 'white',
+    color: 'var(--bingo-text)',
     margin: 0,
   },
 });
@@ -51,7 +51,7 @@ export const Description = styled('p', {
     margin: 0,
     fontSize: '13px',
     lineHeight: '1.4',
-    color: '#B5BAC1',
+    color: 'var(--bingo-text-muted)',
   },
 });
 
@@ -59,12 +59,12 @@ export const CloseButton = styled('button', {
   base: {
     backgroundColor: 'transparent',
     border: 'none',
-    color: '#B5BAC1',
+    color: 'var(--bingo-text-muted)',
     fontSize: '20px',
     cursor: 'pointer',
     padding: '4px 8px',
     _hover: {
-      color: 'white',
+      color: 'var(--bingo-text)',
     },
   },
 });
@@ -73,16 +73,16 @@ export const SearchInput = styled('input', {
   base: {
     padding: '10px 14px',
     fontSize: '14px',
-    backgroundColor: '#1E1F22',
-    border: '1px solid #3F4147',
+    backgroundColor: 'var(--bingo-page-bg)',
+    border: '1px solid var(--bingo-border)',
     borderRadius: '8px',
-    color: 'white',
+    color: 'var(--bingo-text)',
     outline: 'none',
     _focus: {
-      borderColor: '#5865F2',
+      borderColor: 'var(--bingo-primary)',
     },
     _placeholder: {
-      color: '#B5BAC1',
+      color: 'var(--bingo-text-muted)',
     },
   },
 });
@@ -105,22 +105,22 @@ export const CharacterButton = styled('button', {
     alignItems: 'center',
     gap: '4px',
     padding: '8px 4px',
-    backgroundColor: '#3F4147',
-    color: 'white',
+    backgroundColor: 'var(--bingo-surface-2)',
+    color: 'var(--bingo-text)',
     border: '2px solid transparent',
     borderRadius: '8px',
     cursor: 'pointer',
     transition: 'all 0.2s',
     width: 'calc((100% - 16px) / 3)',
     _hover: {
-      backgroundColor: '#5865F2',
+      backgroundColor: 'var(--bingo-primary)',
     },
   },
   variants: {
     isSelected: {
       true: {
-        borderColor: '#5865F2',
-        backgroundColor: '#4752C4',
+        borderColor: 'var(--bingo-primary)',
+        backgroundColor: 'var(--bingo-primary-hover)',
       },
     },
   },

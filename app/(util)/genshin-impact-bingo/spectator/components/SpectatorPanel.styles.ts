@@ -3,7 +3,34 @@ import { styled } from '@/styled-system/jsx';
 export const Container = styled('div', {
   base: {
     minHeight: '100vh',
-    backgroundColor: '#1E1F22',
+    '--bingo-page-bg': '#1E1F22',
+    '--bingo-surface': '#2B2D31',
+    '--bingo-surface-2': '#3F4147',
+    '--bingo-surface-3': '#111214',
+    '--bingo-border': '#3F4147',
+    '--bingo-border-2': '#4F545C',
+    '--bingo-offline': '#747F8D',
+    '--bingo-text': '#FFFFFF',
+    '--bingo-text-muted': '#B5BAC1',
+    '--bingo-text-subtle': '#6D6F78',
+    '--bingo-primary': '#5865F2',
+    '--bingo-primary-hover': '#4752C4',
+    '--bingo-danger': '#ED4245',
+    '--bingo-danger-hover': '#C73E3A',
+    '--bingo-success': '#3BA55C',
+    '--bingo-success-hover': '#2D8049',
+    '--bingo-warning': '#FAA61A',
+    '--bingo-warning-hover': '#D99316',
+    '--bingo-gold': '#FFD700',
+    '--bingo-gold-bg': '#3d3520',
+    '--bingo-matched-bg': '#1a4a2a',
+    '--bingo-matched-text': '#4ade80',
+    '--bingo-shadow-glow-green':
+      '0 0 8px #4ade80, 0 0 16px #4ade80, inset 0 0 8px rgba(74, 222, 128, 0.3)',
+    '--bingo-shadow-glow-gold':
+      '0 0 8px #FFD700, 0 0 16px #FFD700, inset 0 0 8px rgba(255, 215, 0, 0.3)',
+    backgroundColor: 'var(--bingo-page-bg)',
+    color: 'var(--bingo-text)',
     padding: '20px 16px',
     display: 'flex',
     flexDirection: 'column',
@@ -18,7 +45,7 @@ export const Title = styled('h1', {
   base: {
     fontSize: '24px',
     fontWeight: 'bold',
-    color: 'white',
+    color: 'var(--bingo-text)',
     textAlign: 'center',
     marginBottom: '24px',
     md: {
@@ -65,7 +92,7 @@ export const SectionTitle = styled('h2', {
   base: {
     fontSize: '16px',
     fontWeight: '600',
-    color: '#B5BAC1',
+    color: 'var(--bingo-text-muted)',
     marginBottom: '12px',
     display: 'flex',
     alignItems: 'center',
@@ -96,21 +123,21 @@ export const PlayerCard = styled('button', {
     alignItems: 'center',
     gap: '12px',
     padding: '12px',
-    backgroundColor: '#2B2D31',
+    backgroundColor: 'var(--bingo-surface)',
     border: '2px solid transparent',
     borderRadius: '8px',
     transition: 'all 0.2s',
     textAlign: 'left',
     width: '100%',
     _hover: {
-      backgroundColor: '#3F4147',
+      backgroundColor: 'var(--bingo-surface-2)',
     },
   },
   variants: {
     isSelected: {
       true: {
-        borderColor: '#5865F2',
-        backgroundColor: '#3F4147',
+        borderColor: 'var(--bingo-primary)',
+        backgroundColor: 'var(--bingo-surface-2)',
       },
     },
     isOnline: {
@@ -141,15 +168,15 @@ export const OnlineIndicator = styled('div', {
     width: '12px',
     height: '12px',
     borderRadius: '50%',
-    border: '2px solid #2B2D31',
+    border: '2px solid var(--bingo-surface)',
   },
   variants: {
     isOnline: {
       true: {
-        backgroundColor: '#3BA55C',
+        backgroundColor: 'var(--bingo-success)',
       },
       false: {
-        backgroundColor: '#747F8D',
+        backgroundColor: 'var(--bingo-offline)',
       },
     },
   },
@@ -177,7 +204,7 @@ export const PlayerName = styled('p', {
 export const PlayerStatus = styled('p', {
   base: {
     fontSize: '13px',
-    color: '#B5BAC1',
+    color: 'var(--bingo-text-muted)',
     margin: 0,
   },
 });
@@ -186,14 +213,14 @@ export const PlayerScore = styled('div', {
   base: {
     fontSize: '15px',
     fontWeight: 'bold',
-    color: '#FFD700',
+    color: 'var(--bingo-gold)',
     flexShrink: 0,
   },
 });
 
 export const BoardContainer = styled('div', {
   base: {
-    backgroundColor: '#2B2D31',
+    backgroundColor: 'var(--bingo-surface)',
     borderRadius: '12px',
     padding: '16px',
     md: {
@@ -236,8 +263,8 @@ export const SelectedPlayerName = styled('h3', {
 export const ScoreBadge = styled('span', {
   base: {
     padding: '6px 12px',
-    backgroundColor: '#3d3520',
-    color: '#FFD700',
+    backgroundColor: 'var(--bingo-gold-bg)',
+    color: 'var(--bingo-gold)',
     borderRadius: '20px',
     fontSize: '15px',
     fontWeight: 'bold',
@@ -254,12 +281,12 @@ export const ReadyBadge = styled('span', {
   variants: {
     isReady: {
       true: {
-        backgroundColor: '#3BA55C',
-        color: 'white',
+        backgroundColor: 'var(--bingo-success)',
+        color: 'var(--bingo-text)',
       },
       false: {
-        backgroundColor: '#747F8D',
-        color: 'white',
+        backgroundColor: 'var(--bingo-offline)',
+        color: 'var(--bingo-text)',
       },
     },
   },
@@ -272,7 +299,7 @@ export const EmptyState = styled('div', {
     alignItems: 'center',
     justifyContent: 'center',
     padding: '40px 20px',
-    color: '#B5BAC1',
+    color: 'var(--bingo-text-muted)',
     textAlign: 'center',
   },
 });
@@ -300,7 +327,7 @@ export const GameStatusBar = styled('div', {
     justifyContent: 'center',
     gap: '16px',
     padding: '12px 16px',
-    backgroundColor: '#2B2D31',
+    backgroundColor: 'var(--bingo-surface)',
     borderRadius: '8px',
     marginBottom: '20px',
     flexWrap: 'wrap',
@@ -317,13 +344,13 @@ export const StatusItem = styled('div', {
     alignItems: 'center',
     gap: '8px',
     fontSize: '15px',
-    color: 'white',
+    color: 'var(--bingo-text)',
   },
 });
 
 export const StatusLabel = styled('span', {
   base: {
-    color: '#B5BAC1',
+    color: 'var(--bingo-text-muted)',
   },
 });
 
@@ -334,13 +361,13 @@ export const StatusValue = styled('span', {
   variants: {
     status: {
       started: {
-        color: '#3BA55C',
+        color: 'var(--bingo-success)',
       },
       waiting: {
-        color: '#FAA61A',
+        color: 'var(--bingo-warning)',
       },
       finished: {
-        color: '#ED4245',
+        color: 'var(--bingo-danger)',
       },
     },
   },
@@ -349,9 +376,9 @@ export const StatusValue = styled('span', {
 export const DrawnNameDisplay = styled('div', {
   base: {
     padding: '8px 16px',
-    backgroundColor: '#3d3520',
+    backgroundColor: 'var(--bingo-gold-bg)',
     borderRadius: '8px',
-    color: '#FFD700',
+    color: 'var(--bingo-gold)',
     fontWeight: 'bold',
     fontSize: '15px',
   },
@@ -383,9 +410,9 @@ export const SpectatorCell = styled('div', {
     gap: '4px',
     fontSize: '13px',
     fontWeight: '500',
-    backgroundColor: '#3F4147',
-    color: 'white',
-    border: '1px solid #4F545C',
+    backgroundColor: 'var(--bingo-surface-2)',
+    color: 'var(--bingo-text)',
+    border: '1px solid var(--bingo-border-2)',
     borderRadius: '4px',
     padding: '2px',
     textAlign: 'center',
@@ -395,7 +422,7 @@ export const SpectatorCell = styled('div', {
     md: {
       gap: '6px',
       fontSize: '15px',
-      border: '2px solid #4F545C',
+      border: '2px solid var(--bingo-border-2)',
       borderRadius: '8px',
       padding: '4px',
     },
@@ -412,24 +439,23 @@ export const MatchedSpectatorCell = styled('div', {
     gap: '4px',
     fontSize: '13px',
     fontWeight: '600',
-    backgroundColor: '#1a4a2a',
-    color: '#4ade80',
-    border: '2px solid #4ade80',
+    backgroundColor: 'var(--bingo-matched-bg)',
+    color: 'var(--bingo-matched-text)',
+    border: '2px solid var(--bingo-matched-text)',
     borderRadius: '4px',
     padding: '2px',
     textAlign: 'center',
     wordBreak: 'keep-all',
     lineHeight: '1.1',
     overflow: 'hidden',
-    boxShadow: '0 0 6px #4ade80, inset 0 0 4px rgba(74, 222, 128, 0.2)',
+    boxShadow: 'var(--bingo-shadow-glow-green)',
     md: {
       gap: '6px',
       fontSize: '15px',
-      border: '3px solid #4ade80',
+      border: '3px solid var(--bingo-matched-text)',
       borderRadius: '8px',
       padding: '4px',
-      boxShadow:
-        '0 0 8px #4ade80, 0 0 16px #4ade80, inset 0 0 6px rgba(74, 222, 128, 0.2)',
+      boxShadow: 'var(--bingo-shadow-glow-green)',
     },
   },
 });
@@ -444,24 +470,23 @@ export const BingoLineSpectatorCell = styled('div', {
     gap: '4px',
     fontSize: '8px',
     fontWeight: '600',
-    backgroundColor: '#3d3520',
-    color: '#FFD700',
-    border: '2px solid #FFD700',
+    backgroundColor: 'var(--bingo-gold-bg)',
+    color: 'var(--bingo-gold)',
+    border: '2px solid var(--bingo-gold)',
     borderRadius: '4px',
     padding: '2px',
     textAlign: 'center',
     wordBreak: 'keep-all',
     lineHeight: '1.1',
     overflow: 'hidden',
-    boxShadow: '0 0 6px #FFD700, inset 0 0 4px rgba(255, 215, 0, 0.2)',
+    boxShadow: 'var(--bingo-shadow-glow-gold)',
     md: {
       gap: '6px',
       fontSize: '10px',
-      border: '3px solid #FFD700',
+      border: '3px solid var(--bingo-gold)',
       borderRadius: '8px',
       padding: '4px',
-      boxShadow:
-        '0 0 8px #FFD700, 0 0 16px #FFD700, inset 0 0 6px rgba(255, 215, 0, 0.2)',
+      boxShadow: 'var(--bingo-shadow-glow-gold)',
     },
   },
 });
@@ -500,8 +525,8 @@ export const TurnIndicator = styled('span', {
     alignItems: 'center',
     gap: '4px',
     padding: '4px 8px',
-    backgroundColor: '#5865F2',
-    color: 'white',
+    backgroundColor: 'var(--bingo-primary)',
+    color: 'var(--bingo-text)',
     borderRadius: '12px',
     fontSize: '15px',
     fontWeight: '600',
@@ -516,7 +541,7 @@ export const DrawnNamesSection = styled('div', {
   base: {
     width: '100%',
     maxWidth: '1000px',
-    backgroundColor: '#2B2D31',
+    backgroundColor: 'var(--bingo-surface)',
     borderRadius: '12px',
     padding: '16px',
     marginTop: '16px',
@@ -531,7 +556,7 @@ export const DrawnNamesTitle = styled('h3', {
   base: {
     fontSize: '14px',
     fontWeight: '600',
-    color: '#B5BAC1',
+    color: 'var(--bingo-text-muted)',
     marginBottom: '12px',
     md: {
       fontSize: '16px',
@@ -557,8 +582,8 @@ export const DrawnNameTag = styled('span', {
     padding: '4px 10px',
     fontSize: '12px',
     fontWeight: '500',
-    color: '#B5BAC1',
-    backgroundColor: '#3F4147',
+    color: 'var(--bingo-text-muted)',
+    backgroundColor: 'var(--bingo-surface-2)',
     borderRadius: '12px',
     md: {
       padding: '6px 12px',
@@ -568,8 +593,8 @@ export const DrawnNameTag = styled('span', {
   variants: {
     isLatest: {
       true: {
-        backgroundColor: '#5865F2',
-        color: 'white',
+        backgroundColor: 'var(--bingo-primary)',
+        color: 'var(--bingo-text)',
       },
     },
   },

@@ -17,7 +17,7 @@ export const Backdrop = styled('div', {
 
 export const Modal = styled('div', {
   base: {
-    backgroundColor: '#2B2D31',
+    backgroundColor: 'var(--bingo-surface)',
     borderRadius: '12px',
     padding: '24px',
     width: '90%',
@@ -41,7 +41,7 @@ export const Title = styled('h2', {
   base: {
     fontSize: '20px',
     fontWeight: 'bold',
-    color: 'white',
+    color: 'var(--bingo-text)',
     margin: 0,
   },
 });
@@ -50,12 +50,12 @@ export const CloseButton = styled('button', {
   base: {
     backgroundColor: 'transparent',
     border: 'none',
-    color: '#B5BAC1',
+    color: 'var(--bingo-text-muted)',
     fontSize: '20px',
     cursor: 'pointer',
     padding: '4px 8px',
     _hover: {
-      color: 'white',
+      color: 'var(--bingo-text)',
     },
   },
 });
@@ -64,16 +64,16 @@ export const SearchInput = styled('input', {
   base: {
     padding: '12px 16px',
     fontSize: '16px',
-    backgroundColor: '#1E1F22',
-    border: '1px solid #3F4147',
+    backgroundColor: 'var(--bingo-page-bg)',
+    border: '1px solid var(--bingo-border)',
     borderRadius: '8px',
-    color: 'white',
+    color: 'var(--bingo-text)',
     outline: 'none',
     _focus: {
-      borderColor: '#5865F2',
+      borderColor: 'var(--bingo-primary)',
     },
     _placeholder: {
-      color: '#B5BAC1',
+      color: 'var(--bingo-text-muted)',
     },
   },
 });
@@ -82,13 +82,13 @@ export const ClearCellButton = styled('button', {
   base: {
     padding: '10px 16px',
     fontSize: '14px',
-    backgroundColor: '#ED4245',
-    color: 'white',
+    backgroundColor: 'var(--bingo-danger)',
+    color: 'var(--bingo-text)',
     border: 'none',
     borderRadius: '8px',
     cursor: 'pointer',
     _hover: {
-      backgroundColor: '#C73E3A',
+      backgroundColor: 'var(--bingo-danger-hover)',
     },
   },
 });
@@ -108,7 +108,7 @@ export const EmptyMessage = styled('p', {
   base: {
     gridColumn: 'span 3',
     textAlign: 'center',
-    color: '#B5BAC1',
+    color: 'var(--bingo-text-muted)',
     padding: '20px',
   },
 });
@@ -121,8 +121,8 @@ export const CharacterButton = styled('button', {
     gap: '4px',
     padding: '8px 4px',
     fontSize: '11px',
-    backgroundColor: '#3F4147',
-    color: 'white',
+    backgroundColor: 'var(--bingo-surface-2)',
+    color: 'var(--bingo-text)',
     border: 'none',
     borderRadius: '6px',
     cursor: 'pointer',
@@ -130,7 +130,7 @@ export const CharacterButton = styled('button', {
     textAlign: 'center',
     wordBreak: 'keep-all',
     _hover: {
-      backgroundColor: '#5865F2',
+      backgroundColor: 'var(--bingo-primary)',
     },
   },
 });

@@ -5,9 +5,14 @@ export const Container = styled('div', {
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
+    color: '#FFFFFF',
     width: '100%',
     maxWidth: '100vw',
     boxSizing: 'border-box',
+    flex: 1,
+    minHeight: 0,
+    height: '100%',
+    overflow: 'hidden',
     // 모바일 가로모드
     '@media (max-width: 896px) and (orientation: landscape)': {
       flexDirection: 'row',
@@ -19,6 +24,17 @@ export const Container = styled('div', {
   },
 });
 
+export const GamePanelContainer = styled('div', {
+  base: {
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    width: '100%',
+    flex: 1,
+    minHeight: 0,
+  },
+});
+
 export const Header = styled('div', {
   base: {
     position: 'absolute',
@@ -26,7 +42,7 @@ export const Header = styled('div', {
     right: '8px',
     zIndex: 10,
     md: {
-      top: '40px',
+      top: '16px',
       right: '20px',
     },
   },
@@ -40,17 +56,17 @@ export const HelpButton = styled('button', {
     zIndex: 10,
     padding: '4px 10px',
     fontSize: '11px',
-    backgroundColor: '#5865F2',
-    color: 'white',
+    backgroundColor: 'var(--bingo-primary)',
+    color: 'var(--bingo-text)',
     border: 'none',
     borderRadius: '4px',
     cursor: 'pointer',
     fontWeight: '500',
     _hover: {
-      backgroundColor: '#4752C4',
+      backgroundColor: 'var(--bingo-primary-hover)',
     },
     md: {
-      top: '40px',
+      top: '16px',
       left: '20px',
       padding: '6px 12px',
       fontSize: '13px',
@@ -64,7 +80,7 @@ export const UserInfo = styled('div', {
     alignItems: 'center',
     gap: '8px',
     padding: '6px 12px',
-    backgroundColor: '#2B2D31',
+    backgroundColor: 'var(--bingo-surface)',
     borderRadius: '8px',
     md: {
       gap: '12px',
@@ -89,7 +105,7 @@ export const ProfileImage = styled('div', {
 
 export const UserName = styled('span', {
   base: {
-    color: 'white',
+    color: 'var(--bingo-text)',
     fontSize: '13px',
     fontWeight: '500',
     md: {
@@ -102,14 +118,14 @@ export const LogoutButton = styled('button', {
   base: {
     padding: '4px 10px',
     fontSize: '11px',
-    backgroundColor: '#ED4245',
-    color: 'white',
+    backgroundColor: 'var(--bingo-danger)',
+    color: 'var(--bingo-text)',
     border: 'none',
     borderRadius: '4px',
     cursor: 'pointer',
     fontWeight: '500',
     _hover: {
-      backgroundColor: '#C73E3A',
+      backgroundColor: 'var(--bingo-danger-hover)',
     },
     md: {
       padding: '6px 12px',
@@ -140,10 +156,10 @@ export const StatusText = styled('p', {
   variants: {
     isReady: {
       true: {
-        color: '#3BA55C',
+        color: 'var(--bingo-success)',
       },
       false: {
-        color: '#FAA61A',
+        color: 'var(--bingo-warning)',
       },
     },
   },
@@ -152,10 +168,10 @@ export const StatusText = styled('p', {
 export const DrawnNameDisplay = styled('p', {
   base: {
     fontSize: '14px',
-    color: '#5865F2',
+    color: 'var(--bingo-primary)',
     margin: 0,
     padding: '6px 12px',
-    backgroundColor: '#2B2D31',
+    backgroundColor: 'var(--bingo-surface)',
     borderRadius: '8px',
     md: {
       fontSize: '18px',
@@ -180,7 +196,7 @@ export const TurnSection = styled('div', {
     alignItems: 'center',
     gap: '10px',
     padding: '12px 16px',
-    backgroundColor: '#2B2D31',
+    backgroundColor: 'var(--bingo-surface)',
     borderRadius: '12px',
     marginBottom: '12px',
     width: '100%',
@@ -195,7 +211,7 @@ export const TurnSection = styled('div', {
 export const TurnInfo = styled('p', {
   base: {
     fontSize: '14px',
-    color: 'white',
+    color: 'var(--bingo-text)',
     margin: 0,
     textAlign: 'center',
     whiteSpace: 'pre-wrap',
@@ -206,7 +222,7 @@ export const TurnInfo = styled('p', {
   variants: {
     isMyTurn: {
       true: {
-        color: '#3BA55C',
+        color: 'var(--bingo-success)',
         fontWeight: 'bold',
       },
     },
@@ -218,14 +234,14 @@ export const DrawButton = styled('button', {
     padding: '10px 24px',
     fontSize: '16px',
     fontWeight: 'bold',
-    color: 'white',
-    backgroundColor: '#5865F2',
+    color: 'var(--bingo-text)',
+    backgroundColor: 'var(--bingo-primary)',
     border: 'none',
     borderRadius: '8px',
     cursor: 'pointer',
     transition: 'all 0.2s',
     _hover: {
-      backgroundColor: '#4752C4',
+      backgroundColor: 'var(--bingo-primary-hover)',
       transform: 'scale(1.05)',
     },
     _disabled: {
@@ -247,10 +263,10 @@ export const DrawnResult = styled('div', {
     alignItems: 'center',
     gap: '8px',
     padding: '16px',
-    backgroundColor: '#3F4147',
+    backgroundColor: 'var(--bingo-surface-2)',
     borderRadius: '8px',
     animation: 'fadeIn 0.3s ease-in-out',
-    color: '#fff',
+    color: 'var(--bingo-text)',
   },
 });
 
@@ -258,7 +274,7 @@ export const DrawnResultName = styled('span', {
   base: {
     fontSize: '24px',
     fontWeight: 'bold',
-    color: '#5865F2',
+    color: 'var(--bingo-primary)',
   },
 });
 
@@ -269,7 +285,7 @@ export const ReadySection = styled('div', {
     alignItems: 'center',
     gap: '10px',
     padding: '12px 16px',
-    backgroundColor: '#2B2D31',
+    backgroundColor: 'var(--bingo-surface)',
     borderRadius: '12px',
     marginBottom: '12px',
     width: '100%',
@@ -310,14 +326,14 @@ export const BoardActionButton = styled('button', {
     padding: '8px 16px',
     fontSize: '13px',
     fontWeight: '600',
-    color: 'white',
-    backgroundColor: '#5865F2',
+    color: 'var(--bingo-text)',
+    backgroundColor: 'var(--bingo-primary)',
     border: 'none',
     borderRadius: '8px',
     cursor: 'pointer',
     transition: 'all 0.2s',
     _hover: {
-      backgroundColor: '#4752C4',
+      backgroundColor: 'var(--bingo-primary-hover)',
     },
     md: {
       padding: '10px 20px',
@@ -331,14 +347,14 @@ export const BoardActionDangerButton = styled('button', {
     padding: '8px 16px',
     fontSize: '13px',
     fontWeight: '600',
-    color: 'white',
-    backgroundColor: '#ED4245',
+    color: 'var(--bingo-text)',
+    backgroundColor: 'var(--bingo-danger)',
     border: 'none',
     borderRadius: '8px',
     cursor: 'pointer',
     transition: 'all 0.2s',
     _hover: {
-      backgroundColor: '#C73E3A',
+      backgroundColor: 'var(--bingo-danger-hover)',
     },
     md: {
       padding: '10px 20px',
@@ -352,7 +368,7 @@ export const ReadyButton = styled('button', {
     padding: '8px 16px',
     fontSize: '13px',
     fontWeight: 'bold',
-    color: 'white',
+    color: 'var(--bingo-text)',
     border: 'none',
     borderRadius: '8px',
     cursor: 'pointer',
@@ -369,12 +385,12 @@ export const ReadyButton = styled('button', {
   variants: {
     isReady: {
       true: {
-        backgroundColor: '#3BA55C',
-        _hover: { backgroundColor: '#2D8049' },
+        backgroundColor: 'var(--bingo-success)',
+        _hover: { backgroundColor: 'var(--bingo-success-hover)' },
       },
       false: {
-        backgroundColor: '#FAA61A',
-        _hover: { backgroundColor: '#D99316' },
+        backgroundColor: 'var(--bingo-warning)',
+        _hover: { backgroundColor: 'var(--bingo-warning-hover)' },
       },
     },
   },
@@ -388,19 +404,19 @@ export const StartGameButton = styled('button', {
     padding: '10px 24px',
     fontSize: '14px',
     fontWeight: 'bold',
-    color: 'white',
-    backgroundColor: '#ED4245',
+    color: 'var(--bingo-text)',
+    backgroundColor: 'var(--bingo-danger)',
     border: 'none',
     borderRadius: '8px',
     cursor: 'pointer',
     transition: 'all 0.2s',
     _hover: {
-      backgroundColor: '#C73E3A',
+      backgroundColor: 'var(--bingo-danger-hover)',
     },
     _disabled: {
       opacity: 0.5,
       cursor: 'not-allowed',
-      backgroundColor: '#3F4147',
+      backgroundColor: 'var(--bingo-surface-2)',
     },
     md: {
       padding: '12px 32px',
@@ -432,12 +448,12 @@ export const PlayerReadyBadge = styled('span', {
   variants: {
     isReady: {
       true: {
-        backgroundColor: '#3BA55C',
-        color: 'white',
+        backgroundColor: 'var(--bingo-success)',
+        color: 'var(--bingo-text)',
       },
       false: {
         backgroundColor: '#747F8D',
-        color: 'white',
+        color: 'var(--bingo-text)',
       },
     },
     isOnline: {
@@ -460,7 +476,7 @@ export const OnlineIndicator = styled('span', {
   variants: {
     isOnline: {
       true: {
-        backgroundColor: '#3BA55C',
+        backgroundColor: 'var(--bingo-success)',
       },
       false: {
         backgroundColor: '#747F8D',
@@ -487,7 +503,7 @@ export const ModalOverlay = styled('div', {
 
 export const ModalContent = styled('div', {
   base: {
-    backgroundColor: '#2B2D31',
+    backgroundColor: 'var(--bingo-surface)',
     borderRadius: '16px',
     padding: '24px 16px',
     maxWidth: '400px',
@@ -504,7 +520,7 @@ export const ModalTitle = styled('h2', {
   base: {
     fontSize: '22px',
     fontWeight: 'bold',
-    color: 'white',
+    color: 'var(--bingo-text)',
     marginBottom: '12px',
     md: {
       fontSize: '28px',
@@ -543,9 +559,9 @@ export const RankingItem = styled('div', {
     alignItems: 'center',
     justifyContent: 'space-between',
     padding: '10px 12px',
-    backgroundColor: '#3F4147',
+    backgroundColor: 'var(--bingo-surface-2)',
     borderRadius: '8px',
-    color: 'white',
+    color: 'var(--bingo-text)',
     fontSize: '14px',
     md: {
       padding: '12px 16px',
@@ -578,13 +594,14 @@ export const CloseButton = styled('button', {
     padding: '10px 24px',
     fontSize: '14px',
     fontWeight: 'bold',
-    color: 'white',
-    backgroundColor: '#5865F2',
+    color: 'var(--bingo-text)',
+    backgroundColor: 'var(--bingo-primary)',
     border: 'none',
     borderRadius: '8px',
     cursor: 'pointer',
+    transition: 'all 0.2s',
     _hover: {
-      backgroundColor: '#4752C4',
+      backgroundColor: 'var(--bingo-primary-hover)',
     },
     md: {
       padding: '12px 32px',
@@ -624,10 +641,10 @@ export const CountdownNumber = styled('div', {
 export const CountdownText = styled('p', {
   base: {
     fontSize: '14px',
-    color: 'white',
+    color: 'var(--bingo-text)',
     marginTop: '16px',
     md: {
-      fontSize: '16x',
+      fontSize: '16px',
     },
   },
 });
@@ -637,9 +654,9 @@ export const MyRankDisplay = styled('div', {
   base: {
     marginTop: '16px',
     padding: '12px 20px',
-    backgroundColor: '#5865F2',
+    backgroundColor: 'var(--bingo-primary)',
     borderRadius: '12px',
-    color: 'white',
+    color: 'var(--bingo-text)',
     fontSize: '16px',
     fontWeight: 'bold',
     textAlign: 'center',
@@ -657,8 +674,11 @@ export const DrawnNamesSection = styled('div', {
     maxWidth: '400px',
     marginTop: '16px',
     padding: '12px',
-    backgroundColor: '#2B2D31',
+    backgroundColor: 'var(--bingo-surface)',
     borderRadius: '12px',
+    display: 'flex',
+    flexDirection: 'column',
+    flexShrink: 0,
     md: {
       maxWidth: '600px',
       padding: '16px',
@@ -670,7 +690,7 @@ export const DrawnNamesTitle = styled('h3', {
   base: {
     fontSize: '14px',
     fontWeight: 'bold',
-    color: '#B5BAC1',
+    color: 'var(--bingo-text-muted)',
     marginBottom: '8px',
     textAlign: 'center',
     md: {
@@ -686,7 +706,7 @@ export const DrawnNamesList = styled('div', {
     flexWrap: 'wrap',
     gap: '6px',
     justifyContent: 'center',
-    maxHeight: '120px',
+    maxHeight: '105px',
     overflowY: 'auto',
     md: {
       gap: '8px',
@@ -699,8 +719,8 @@ export const DrawnNameTag = styled('span', {
   base: {
     padding: '4px 8px',
     fontSize: '12px',
-    backgroundColor: '#3F4147',
-    color: '#B5BAC1',
+    backgroundColor: 'var(--bingo-surface-2)',
+    color: 'var(--bingo-text-muted)',
     borderRadius: '4px',
     md: {
       padding: '6px 10px',
@@ -710,8 +730,8 @@ export const DrawnNameTag = styled('span', {
   variants: {
     isLatest: {
       true: {
-        backgroundColor: '#5865F2',
-        color: 'white',
+        backgroundColor: 'var(--bingo-primary)',
+        color: 'var(--bingo-text)',
         fontWeight: 'bold',
       },
     },
@@ -721,7 +741,7 @@ export const DrawnNameTag = styled('span', {
 // 이름 뽑기 모달
 export const DrawModalContent = styled('div', {
   base: {
-    backgroundColor: '#2B2D31',
+    backgroundColor: 'var(--bingo-surface)',
     borderRadius: '16px',
     padding: '24px 16px',
     maxWidth: '400px',
@@ -742,7 +762,7 @@ export const DrawModalTitle = styled('h2', {
   base: {
     fontSize: '20px',
     fontWeight: 'bold',
-    color: 'white',
+    color: 'var(--bingo-text)',
     md: {
       fontSize: '24px',
     },
@@ -765,14 +785,14 @@ export const RandomDrawButton = styled('button', {
     padding: '16px 24px',
     fontSize: '18px',
     fontWeight: 'bold',
-    color: 'white',
-    backgroundColor: '#5865F2',
+    color: 'var(--bingo-text)',
+    backgroundColor: 'var(--bingo-primary)',
     border: 'none',
     borderRadius: '12px',
     cursor: 'pointer',
     transition: 'all 0.2s',
     _hover: {
-      backgroundColor: '#4752C4',
+      backgroundColor: 'var(--bingo-primary-hover)',
       transform: 'scale(1.02)',
     },
     _disabled: {
@@ -792,14 +812,14 @@ export const CancelDrawButton = styled('button', {
     padding: '12px 24px',
     fontSize: '14px',
     fontWeight: '500',
-    color: '#B5BAC1',
+    color: 'var(--bingo-text-muted)',
     backgroundColor: 'transparent',
-    border: '1px solid #3F4147',
+    border: '1px solid var(--bingo-border)',
     borderRadius: '8px',
     cursor: 'pointer',
     transition: 'all 0.2s',
     _hover: {
-      backgroundColor: '#3F4147',
+      backgroundColor: 'var(--bingo-surface-2)',
     },
     md: {
       padding: '14px 28px',
@@ -813,14 +833,14 @@ export const SelectDrawButton = styled('button', {
     padding: '16px 24px',
     fontSize: '18px',
     fontWeight: 'bold',
-    color: 'white',
-    backgroundColor: '#3BA55C',
+    color: 'var(--bingo-text)',
+    backgroundColor: 'var(--bingo-success)',
     border: 'none',
     borderRadius: '12px',
     cursor: 'pointer',
     transition: 'all 0.2s',
     _hover: {
-      backgroundColor: '#2D8049',
+      backgroundColor: 'var(--bingo-success-hover)',
       transform: 'scale(1.02)',
     },
     md: {
@@ -858,8 +878,8 @@ export const NameSelectItem = styled('button', {
     padding: '8px',
     fontSize: '12px',
     fontWeight: '500',
-    color: 'white',
-    backgroundColor: '#3F4147',
+    color: 'var(--bingo-text)',
+    backgroundColor: 'var(--bingo-surface-2)',
     border: '2px solid transparent',
     borderRadius: '8px',
     cursor: 'pointer',
@@ -867,8 +887,8 @@ export const NameSelectItem = styled('button', {
     textAlign: 'center',
     wordBreak: 'keep-all',
     _hover: {
-      backgroundColor: '#5865F2',
-      borderColor: '#5865F2',
+      backgroundColor: 'var(--bingo-primary)',
+      borderColor: 'var(--bingo-primary)',
     },
     md: {
       padding: '10px 12px',
@@ -878,12 +898,12 @@ export const NameSelectItem = styled('button', {
   variants: {
     isInMyBoard: {
       true: {
-        backgroundColor: '#3d3520',
-        borderColor: '#FFD700',
-        color: '#FFD700',
+        backgroundColor: 'var(--bingo-gold-bg)',
+        borderColor: 'var(--bingo-gold)',
+        color: 'var(--bingo-gold)',
         _hover: {
-          backgroundColor: '#4d4530',
-          borderColor: '#FFD700',
+          backgroundColor: 'var(--bingo-gold-bg)',
+          borderColor: 'var(--bingo-gold)',
         },
       },
     },
@@ -895,17 +915,17 @@ export const SearchInput = styled('input', {
     width: '100%',
     padding: '12px 16px',
     fontSize: '14px',
-    color: 'white',
-    backgroundColor: '#1E1F22',
-    border: '2px solid #3F4147',
+    color: 'var(--bingo-text)',
+    backgroundColor: 'var(--bingo-page-bg)',
+    border: '2px solid var(--bingo-border)',
     borderRadius: '8px',
     outline: 'none',
     transition: 'border-color 0.2s',
     _focus: {
-      borderColor: '#5865F2',
+      borderColor: 'var(--bingo-primary)',
     },
     _placeholder: {
-      color: '#72767D',
+      color: 'var(--bingo-text-subtle)',
     },
     md: {
       fontSize: '16px',
@@ -916,7 +936,7 @@ export const SearchInput = styled('input', {
 // 게임 시작 동의 모달
 export const StartRequestModal = styled('div', {
   base: {
-    backgroundColor: '#2B2D31',
+    backgroundColor: 'var(--bingo-surface)',
     borderRadius: '16px',
     padding: '24px 16px',
     maxWidth: '400px',
@@ -948,7 +968,7 @@ export const StartRequestTitle = styled('h3', {
 export const StartRequestInfo = styled('p', {
   base: {
     fontSize: '14px',
-    color: '#B5BAC1',
+    color: 'var(--bingo-text-muted)',
     margin: 0,
     md: {
       fontSize: '16px',
@@ -963,7 +983,7 @@ export const AgreedUsersList = styled('div', {
     gap: '8px',
     justifyContent: 'center',
     padding: '12px',
-    backgroundColor: '#1E1F22',
+    backgroundColor: 'var(--bingo-page-bg)',
     borderRadius: '8px',
     width: '100%',
   },
@@ -982,12 +1002,12 @@ export const AgreedUserBadge = styled('span', {
   variants: {
     agreed: {
       true: {
-        backgroundColor: '#3BA55C',
-        color: 'white',
+        backgroundColor: 'var(--bingo-success)',
+        color: 'var(--bingo-text)',
       },
       false: {
-        backgroundColor: '#3F4147',
-        color: '#B5BAC1',
+        backgroundColor: 'var(--bingo-surface-2)',
+        color: 'var(--bingo-text-muted)',
       },
     },
   },
@@ -998,14 +1018,14 @@ export const AgreeButton = styled('button', {
     padding: '12px 32px',
     fontSize: '16px',
     fontWeight: 'bold',
-    color: 'white',
-    backgroundColor: '#3BA55C',
+    color: 'var(--bingo-text)',
+    backgroundColor: 'var(--bingo-success)',
     border: 'none',
     borderRadius: '8px',
     cursor: 'pointer',
     transition: 'all 0.2s',
     _hover: {
-      backgroundColor: '#2D8049',
+      backgroundColor: 'var(--bingo-success-hover)',
     },
     _disabled: {
       opacity: 0.5,
@@ -1023,9 +1043,9 @@ export const CancelRequestButton = styled('button', {
     padding: '10px 20px',
     fontSize: '14px',
     fontWeight: '500',
-    color: '#ED4245',
+    color: 'var(--bingo-danger)',
     backgroundColor: 'transparent',
-    border: '1px solid #ED4245',
+    border: '1px solid var(--bingo-danger)',
     borderRadius: '8px',
     cursor: 'pointer',
     transition: 'all 0.2s',
@@ -1044,14 +1064,14 @@ export const RequestStartButton = styled('button', {
     padding: '10px 24px',
     fontSize: '14px',
     fontWeight: 'bold',
-    color: 'white',
-    backgroundColor: '#5865F2',
+    color: 'var(--bingo-text)',
+    backgroundColor: 'var(--bingo-primary)',
     border: 'none',
     borderRadius: '8px',
     cursor: 'pointer',
     transition: 'all 0.2s',
     _hover: {
-      backgroundColor: '#4752C4',
+      backgroundColor: 'var(--bingo-primary-hover)',
     },
     _disabled: {
       opacity: 0.5,
@@ -1069,14 +1089,14 @@ export const ResetButton = styled('button', {
     padding: '12px 32px',
     fontSize: '16px',
     fontWeight: 'bold',
-    color: 'white',
-    backgroundColor: '#ED4245',
+    color: 'var(--bingo-text)',
+    backgroundColor: 'var(--bingo-danger)',
     border: 'none',
     borderRadius: '8px',
     cursor: 'pointer',
     transition: 'all 0.2s',
     _hover: {
-      backgroundColor: '#C73E3A',
+      backgroundColor: 'var(--bingo-danger-hover)',
     },
     _disabled: {
       opacity: 0.5,
@@ -1094,14 +1114,14 @@ export const RestartButton = styled('button', {
     padding: '12px 32px',
     fontSize: '16px',
     fontWeight: 'bold',
-    color: 'white',
-    backgroundColor: '#3BA55C',
+    color: 'var(--bingo-text)',
+    backgroundColor: 'var(--bingo-success)',
     border: 'none',
     borderRadius: '8px',
     cursor: 'pointer',
     transition: 'all 0.2s',
     _hover: {
-      backgroundColor: '#2D8049',
+      backgroundColor: 'var(--bingo-success-hover)',
     },
     _disabled: {
       opacity: 0.5,
@@ -1127,7 +1147,7 @@ export const AdminButtonGroup = styled('div', {
 // 확인 다이얼로그
 export const ConfirmDialog = styled('div', {
   base: {
-    backgroundColor: '#2B2D31',
+    backgroundColor: 'var(--bingo-surface)',
     borderRadius: '16px',
     padding: '24px',
     maxWidth: '400px',
@@ -1144,7 +1164,7 @@ export const ConfirmDialogTitle = styled('h3', {
   base: {
     fontSize: '20px',
     fontWeight: 'bold',
-    color: 'white',
+    color: 'var(--bingo-text)',
     margin: 0,
   },
 });
@@ -1152,7 +1172,7 @@ export const ConfirmDialogTitle = styled('h3', {
 export const ConfirmDialogText = styled('p', {
   base: {
     fontSize: '14px',
-    color: '#B5BAC1',
+    color: 'var(--bingo-text-muted)',
     margin: 0,
     lineHeight: 1.5,
     whiteSpace: 'pre-wrap',
@@ -1176,16 +1196,16 @@ export const AdminResetButton = styled('button', {
     padding: '12px 20px',
     fontSize: '14px',
     fontWeight: 'bold',
-    color: 'white',
-    backgroundColor: '#ED4245',
+    color: 'var(--bingo-text)',
+    backgroundColor: 'var(--bingo-danger)',
     border: 'none',
     borderRadius: '8px',
     cursor: 'pointer',
     transition: 'all 0.2s',
-    boxShadow: '0 4px 12px rgba(237, 66, 69, 0.4)',
+    boxShadow: 'var(--bingo-shadow-danger-button)',
     zIndex: 100,
     _hover: {
-      backgroundColor: '#C73E3A',
+      backgroundColor: 'var(--bingo-danger-hover)',
       transform: 'scale(1.05)',
     },
     md: {
@@ -1204,23 +1224,23 @@ export const AdminForceStartButton = styled('button', {
     padding: '12px 20px',
     fontSize: '14px',
     fontWeight: 'bold',
-    color: 'white',
-    backgroundColor: '#5865F2',
+    color: 'var(--bingo-text)',
+    backgroundColor: 'var(--bingo-primary)',
     border: 'none',
     borderRadius: '8px',
     cursor: 'pointer',
     transition: 'all 0.2s',
-    boxShadow: '0 4px 12px rgba(88, 101, 242, 0.4)',
+    boxShadow: 'var(--bingo-shadow-primary-button)',
     zIndex: 100,
     _hover: {
-      backgroundColor: '#4752C4',
+      backgroundColor: 'var(--bingo-primary-hover)',
       transform: 'scale(1.05)',
     },
     _disabled: {
       opacity: 0.5,
       cursor: 'not-allowed',
       transform: 'none',
-      backgroundColor: '#3F4147',
+      backgroundColor: 'var(--bingo-surface-2)',
     },
     md: {
       padding: '14px 24px',

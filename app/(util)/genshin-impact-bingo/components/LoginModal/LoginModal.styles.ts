@@ -11,7 +11,7 @@ export const Backdrop = styled('div', {
     alignItems: 'center',
     justifyContent: 'center',
     zIndex: 1000,
-    background: '#1E1F22',
+    background: 'var(--bingo-page-bg)',
   },
 });
 
@@ -20,21 +20,21 @@ export const SpectatorButton = styled('button', {
     padding: '12px',
     fontSize: '14px',
     fontWeight: 'bold',
-    backgroundColor: '#3F4147',
-    color: 'white',
-    border: '1px solid #5865F2',
+    backgroundColor: 'var(--bingo-surface-2)',
+    color: 'var(--bingo-text)',
+    border: '1px solid var(--bingo-primary)',
     borderRadius: '8px',
     cursor: 'pointer',
     transition: 'all 0.2s',
     _hover: {
-      backgroundColor: '#4F545C',
+      backgroundColor: 'var(--bingo-border-2)',
     },
   },
 });
 
 export const Modal = styled('div', {
   base: {
-    backgroundColor: '#2B2D31',
+    backgroundColor: 'var(--bingo-surface)',
     borderRadius: '12px',
     padding: '32px',
     width: '90%',
@@ -74,7 +74,7 @@ export const InputGroup = styled('div', {
 export const Label = styled('label', {
   base: {
     fontSize: '14px',
-    color: '#B5BAC1',
+    color: 'var(--bingo-text-muted)',
     fontWeight: '500',
   },
 });
@@ -83,16 +83,16 @@ export const Input = styled('input', {
   base: {
     padding: '12px 16px',
     fontSize: '16px',
-    backgroundColor: '#1E1F22',
-    border: '1px solid #3F4147',
+    backgroundColor: 'var(--bingo-page-bg)',
+    border: '1px solid var(--bingo-border)',
     borderRadius: '8px',
-    color: 'white',
+    color: 'var(--bingo-text)',
     outline: 'none',
     _focus: {
-      borderColor: '#5865F2',
+      borderColor: 'var(--bingo-primary)',
     },
     _placeholder: {
-      color: '#6D6F78',
+      color: 'var(--bingo-text-subtle)',
     },
   },
 });
@@ -102,17 +102,17 @@ export const SubmitButton = styled('button', {
     padding: '14px',
     fontSize: '16px',
     fontWeight: 'bold',
-    backgroundColor: '#5865F2',
-    color: 'white',
+    backgroundColor: 'var(--bingo-primary)',
+    color: 'var(--bingo-text)',
     border: 'none',
     borderRadius: '8px',
     cursor: 'pointer',
     transition: 'background-color 0.2s',
     _hover: {
-      backgroundColor: '#4752C4',
+      backgroundColor: 'var(--bingo-primary-hover)',
     },
     _disabled: {
-      backgroundColor: '#3F4147',
+      backgroundColor: 'var(--bingo-surface-2)',
       cursor: 'not-allowed',
     },
   },
@@ -122,19 +122,19 @@ export const ToggleButton = styled('button', {
   base: {
     backgroundColor: 'transparent',
     border: 'none',
-    color: '#5865F2',
+    color: 'var(--bingo-primary)',
     fontSize: '14px',
     cursor: 'pointer',
     textDecoration: 'underline',
     _hover: {
-      color: '#7983F5',
+      color: 'var(--bingo-primary)',
     },
   },
 });
 
 export const ErrorMessage = styled('p', {
   base: {
-    color: '#ED4245',
+    color: 'var(--bingo-danger)',
     fontSize: '14px',
     textAlign: 'center',
     margin: 0,
@@ -143,7 +143,7 @@ export const ErrorMessage = styled('p', {
 
 export const HelperText = styled('p', {
   base: {
-    color: '#B5BAC1',
+    color: 'var(--bingo-text-muted)',
     fontSize: '12px',
     margin: 0,
   },
@@ -155,14 +155,14 @@ export const UserInfo = styled('div', {
     alignItems: 'center',
     gap: '12px',
     padding: '8px 16px',
-    backgroundColor: '#2B2D31',
+    backgroundColor: 'var(--bingo-surface)',
     borderRadius: '8px',
   },
 });
 
 export const UserName = styled('span', {
   base: {
-    color: 'white',
+    color: 'var(--bingo-text)',
     fontSize: '14px',
     fontWeight: '500',
   },
@@ -172,14 +172,14 @@ export const LogoutButton = styled('button', {
   base: {
     padding: '6px 12px',
     fontSize: '13px',
-    backgroundColor: '#3F4147',
-    color: '#B5BAC1',
+    backgroundColor: 'var(--bingo-surface-2)',
+    color: 'var(--bingo-text-muted)',
     border: 'none',
     borderRadius: '6px',
     cursor: 'pointer',
     transition: 'background-color 0.2s',
     _hover: {
-      backgroundColor: '#4F545C',
+      backgroundColor: 'var(--bingo-border-2)',
     },
   },
 });

@@ -32,11 +32,7 @@ import {
   NewMessageToastAvatar,
   NewMessageToastBadge,
   NewMessageToastText,
-  RequestButton,
   RequestButtonGroup,
-  RequestCharacterItem,
-  RequestCharacterLabel,
-  RequestCharacterPanel,
   ScrollToBottomFloatingButton,
   SendButton,
   Title,
@@ -143,6 +139,8 @@ interface ChatProps {
   characterNames?: string[];
   characterEnNames?: string[];
   isSpectator?: boolean;
+  isActive?: boolean;
+  onUnreadCountChange?: (count: number) => void;
 }
 
 export function Chat({
@@ -156,16 +154,20 @@ export function Chat({
   characterNames,
   characterEnNames,
   isSpectator,
+  isActive = true,
+  onUnreadCountChange,
 }: ChatProps) {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [inputValue, setInputValue] = useState('');
   const [isSending, setIsSending] = useState(false);
+  const lastSendAtRef = useRef(0);
   const [isRequestPanelOpen, setIsRequestPanelOpen] = useState(false);
   const [isAutoScrollEnabled, setIsAutoScrollEnabled] = useState(true);
   const [unreadCount, setUnreadCount] = useState(0);
   const messageListRef = useRef<HTMLDivElement>(null);
   const prevMessageCountRef = useRef(0);
   const isPinnedToBottomRef = useRef(true);
+  const hasReceivedInitialMessagesRef = useRef(false);
 
   const { typingUsers, typingText, onLocalInputActivity, stopTyping } =
     useChatPresence({
@@ -205,6 +207,9 @@ export function Chat({
   useEffect(() => {
     const subscription = subscribeToChatMessages(
       (initialMessages) => {
+        hasReceivedInitialMessagesRef.current = true;
+        prevMessageCountRef.current = initialMessages.length;
+        setUnreadCount(0);
         setMessages(initialMessages);
       },
       (newMessage) => {
@@ -227,6 +232,18 @@ export function Chat({
     isPinnedToBottomRef.current = true;
   }, []);
 
+  useEffect(() => {
+    if (!isActive) return;
+
+    const frame = requestAnimationFrame(() => {
+      scrollToBottom();
+    });
+
+    return () => {
+      cancelAnimationFrame(frame);
+    };
+  }, [isActive, scrollToBottom]);
+
   const handleMessageListScroll = useCallback(() => {
     const element = messageListRef.current;
     if (!element) return;
@@ -247,6 +264,11 @@ export function Chat({
     const nextCount = messages.length;
     const prevCount = prevMessageCountRef.current;
 
+    if (!hasReceivedInitialMessagesRef.current) {
+      prevMessageCountRef.current = nextCount;
+      return;
+    }
+
     if (!element) {
       prevMessageCountRef.current = nextCount;
       return;
@@ -254,6 +276,14 @@ export function Chat({
 
     const latest = messages.at(-1);
     const isFromMe = !!userId && latest?.user_id === userId;
+
+    if (!isActive) {
+      if (nextCount > prevCount && !isFromMe)
+        setUnreadCount((prev) => prev + (nextCount - prevCount));
+      prevMessageCountRef.current = messages.length;
+      return;
+    }
+
     const shouldStickToBottom = isPinnedToBottomRef.current || isFromMe;
 
     if (nextCount > prevCount && shouldStickToBottom) {
@@ -279,13 +309,26 @@ export function Chat({
     scrollToBottom,
     handleMessageListScroll,
     userId,
+    isActive,
   ]);
 
   useEffect(() => {
+    if (!onUnreadCountChange) return;
+    onUnreadCountChange(unreadCount);
+  }, [onUnreadCountChange, unreadCount]);
+
+  useEffect(() => {
+    if (!isActive) return;
+    if (unreadCount === 0) return;
+    setUnreadCount(0);
+  }, [isActive, unreadCount]);
+
+  useEffect(() => {
+    if (!isActive) return;
     if (!isAutoScrollEnabled) return;
     if (unreadCount === 0) return;
     setUnreadCount(0);
-  }, [isAutoScrollEnabled, unreadCount]);
+  }, [isActive, isAutoScrollEnabled, unreadCount]);
 
   const latestUnreadPreview = useMemo(() => {
     if (unreadCount === 0) return '';
@@ -308,6 +351,13 @@ export function Chat({
 
   const handleSend = useCallback(async () => {
     if (!userId || !userName || !inputValue.trim() || isSending) return;
+
+    const now = Date.now();
+    if (now - lastSendAtRef.current < 800) {
+      alert('너무 빠르게 보내고 있어요. 잠시 후 다시 시도해 주세요.');
+      return;
+    }
+    lastSendAtRef.current = now;
 
     setIsSending(true);
     try {
@@ -337,6 +387,13 @@ export function Chat({
   const handleBoast = useCallback(async () => {
     if (!userId || !userName || !canBoast || isSending || !myScore || !myRank)
       return;
+
+    const now = Date.now();
+    if (now - lastSendAtRef.current < 800) {
+      alert('너무 빠르게 보내고 있어요. 잠시 후 다시 시도해 주세요.');
+      return;
+    }
+    lastSendAtRef.current = now;
 
     setIsSending(true);
     const boastMessage = `🎉 ${myScore}빙고!`;
@@ -371,6 +428,13 @@ export function Chat({
   const _handleSendRequest = useCallback(
     async ({ characterName }: { characterName: string }) => {
       if (!userId || !userName || isSending) return;
+
+      const now = Date.now();
+      if (now - lastSendAtRef.current < 800) {
+        alert('너무 빠르게 보내고 있어요. 잠시 후 다시 시도해 주세요.');
+        return;
+      }
+      lastSendAtRef.current = now;
 
       const characterKey = nameMap.get(characterName) ?? 'Aino';
       const requestText = `${characterName} 뽑아주세요 🙏`;

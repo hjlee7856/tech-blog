@@ -44,6 +44,7 @@ import {
   DrawnNamesSection,
   DrawnNamesTitle,
   DrawnNameTag,
+  GamePanelContainer,
   GameStatus,
   Header,
   HelpButton,
@@ -74,12 +75,14 @@ import {
   playSelectSound,
 } from '../../lib/sounds';
 import { Chat } from '../Chat';
-import { ModeSelectModal } from '../ModeSelectModal';
 import { NicknameChangeModal } from '../NicknameChangeModal';
 import { ReadyStatus } from '../ReadyStatus';
 import { AdminMenu } from './AdminMenu';
+import { BingoGameTabs } from './BingoGameTabs';
 import { useGameData, useOnlinePresenceUserIds } from './hooks';
 import { FinishModal } from './modals';
+
+type GameTabKey = 'game' | 'ranking' | 'chat';
 
 interface BingoGameProps {
   characterNames: string[];
@@ -91,6 +94,9 @@ export function BingoGame({
   characterEnNames,
 }: BingoGameProps) {
   const router = useRouter();
+
+  const [activeTab, setActiveTab] = useState<GameTabKey>('game');
+  const [chatUnreadCount, setChatUnreadCount] = useState(0);
   // 모달 상태
   const [showFinishModal, setShowFinishModal] = useState(false);
   const [finalRanking, setFinalRanking] = useState<Player[]>([]);
@@ -112,7 +118,8 @@ export function BingoGame({
 
   // 콜백 메모이제이션 (재구독 방지)
   const handleGameFinish = useCallback((ranking: Player[]) => {
-    setFinalRanking(ranking);
+    const activeRanking = ranking.filter((p) => p.order > 0);
+    setFinalRanking(activeRanking);
     setShowFinishModal(true);
     playGameFinishSound();
   }, []);
@@ -139,7 +146,8 @@ export function BingoGame({
   const isOnlineReady =
     !user || isPresenceSubscribed || onlineUserIds.includes(user.id);
 
-  const leaderUserId = onlineUserIds.length > 0 ? onlineUserIds[0] : null;
+  const leaderUserId =
+    onlineUserIds.length > 0 ? Math.min(...onlineUserIds) : null;
   const isLeader = !!user?.id && leaderUserId === user.id;
 
   useEffect(() => {
@@ -175,18 +183,23 @@ export function BingoGame({
     if (isStartingRef.current) return;
     if (!isLeader) return;
 
-    const readyPlayers = players.filter(
-      (p) =>
-        p.is_ready &&
-        p.board.filter((item) => item !== null && item !== '').length === 25,
-    );
+    const eligiblePlayers = players.filter((p) => {
+      if (!onlineUserIds.includes(p.id)) return false;
+      const filledCount = p.board.filter(
+        (item) => item !== null && item !== '',
+      ).length;
+      return filledCount === 25;
+    });
+    const readyPlayers = eligiblePlayers.filter((p) => p.is_ready);
+    const isAllEligibleReady =
+      eligiblePlayers.length > 0 && eligiblePlayers.every((p) => p.is_ready);
 
     // 이전 타이머 취소
     if (startGameTimeoutRef.current) {
       clearTimeout(startGameTimeoutRef.current);
     }
 
-    if (readyPlayers.length >= 2) {
+    if (readyPlayers.length >= 2 && isAllEligibleReady) {
       // 500ms 후에 시작 (여러 클라이언트의 동시 호출 방지)
       startGameTimeoutRef.current = setTimeout(() => {
         if (isStartingRef.current || gameState.is_started) return;
@@ -331,7 +344,8 @@ export function BingoGame({
         // 우승자 확정 시에도 점수를 최신 상태로 반영 (예: 12줄 빙고)
         await checkAndUpdateAllScores(newDrawnNames);
         const ranking = await getPlayersRanking();
-        setFinalRanking(ranking);
+        const activeRanking = ranking.filter((p) => p.order > 0);
+        setFinalRanking(activeRanking);
         setShowFinishModal(true);
         setIsDrawing(false);
         return;
@@ -352,6 +366,8 @@ export function BingoGame({
     setIsResetting(true);
     await resetGame();
     setShowResetConfirm(false);
+    setShowFinishModal(false);
+    setFinalRanking([]);
     setIsResetting(false);
   }, []);
 
@@ -514,40 +530,26 @@ export function BingoGame({
     return <LoginModal onLogin={handleLogin} />;
   }
 
-  return (
-    <Container>
-      {!user.is_admin && (
-        <HelpButton type="button" onClick={() => setShowHelpModal(true)}>
-          도움말
-        </HelpButton>
-      )}
-      <Header>
-        <UserInfo>
-          <ProfileImage
-            onClick={() => setShowProfileModal(true)}
-            style={{ cursor: 'pointer' }}
-            title="프로필 사진 변경"
-          >
-            <Image
-              src={getProfileImagePath(user.profile_image || 'Nahida')}
-              alt={user.name}
-              width={36}
-              height={36}
-              style={{ borderRadius: '50%', objectFit: 'cover' }}
-            />
-          </ProfileImage>
-          <UserName
-            onClick={() => setShowNicknameModal(true)}
-            style={{ cursor: 'pointer' }}
-            title="클릭하여 닉네임 변경"
-          >
-            {user.name}
-          </UserName>
-          <LogoutButton onClick={handleLogout}>로그아웃</LogoutButton>
-        </UserInfo>
-      </Header>
+  const rankingPanel = !gameState?.is_started ? (
+    <ReadyStatus
+      userId={user.id}
+      players={players}
+      onlineUserIds={onlineUserIds}
+      isPresenceSubscribed={isPresenceSubscribed}
+    />
+  ) : (
+    <Ranking
+      isGameStarted={gameState?.is_started}
+      userId={user.id}
+      players={players}
+      gameState={gameState}
+      onlineUserIds={onlineUserIds}
+      isPresenceSubscribed={isPresenceSubscribed}
+    />
+  );
 
-      {/* 게임 대기 중일 때 준비 섹션 */}
+  const gamePanel = (
+    <GamePanelContainer>
       {!gameState?.is_started && (
         <ReadySection>
           <GameStatus>
@@ -584,11 +586,9 @@ export function BingoGame({
         </ReadySection>
       )}
 
-      {/* 게임 진행 중일 때 턴 섹션 */}
       {gameState?.is_started && (
         <TurnSection>
           <GameStatus>
-            <StatusText isReady={false}>게임 진행 중</StatusText>
             {lastDrawnName && (
               <DrawnNameDisplay isLatest>
                 마지막 뽑힌 이름: <strong>{lastDrawnName}</strong>
@@ -604,7 +604,9 @@ export function BingoGame({
 
           {isMyTurn && (
             <TurnInfo isMyTurn>
-              이름을 뽑을 차례입니다!{'\n'}보드에서 이름을 선택하세요.
+              이름을 뽑을 차례입니다!
+              <br />
+              보드에서 이름을 선택하세요.
             </TurnInfo>
           )}
           {!isMyTurn && myPlayer?.order !== 0 && (
@@ -657,30 +659,6 @@ export function BingoGame({
         onBoardChange={setLocalBoard}
       />
 
-      {/* 채팅 */}
-      <Chat
-        userId={user.id}
-        userName={user.name}
-        profileImage={user.profile_image}
-        myScore={myPlayer?.score}
-        myRank={myRank}
-        isGameStarted={gameState?.is_started}
-        myBoard={localBoard}
-        characterNames={characterNames}
-        characterEnNames={characterEnNames}
-      />
-
-      {/* presence 디버그용 (개발 모드에서만 동작, UI에는 표시 X) */}
-      {/* <PresenceDebug userId={user.id} /> */}
-
-      {/* 게임 시작 전: 준비 상태, 게임 시작 후: 실시간 순위 */}
-      {!gameState?.is_started ? (
-        <ReadyStatus userId={user.id} onlineUserIds={onlineUserIds} />
-      ) : (
-        <Ranking isGameStarted={gameState?.is_started} userId={user.id} />
-      )}
-
-      {/* 뽑은 이름 목록 */}
       {gameState?.is_started && gameState.drawn_names.length > 0 && (
         <DrawnNamesSection>
           <DrawnNamesTitle>
@@ -698,6 +676,71 @@ export function BingoGame({
           </DrawnNamesList>
         </DrawnNamesSection>
       )}
+    </GamePanelContainer>
+  );
+
+  const chatPanel = (
+    <Chat
+      userId={user.id}
+      userName={user.name}
+      profileImage={user.profile_image}
+      myScore={myPlayer?.score}
+      myRank={myRank}
+      isGameStarted={gameState?.is_started}
+      myBoard={localBoard}
+      characterNames={characterNames}
+      characterEnNames={characterEnNames}
+      isActive={activeTab === 'chat'}
+      onUnreadCountChange={setChatUnreadCount}
+    />
+  );
+
+  const chatBadgeCount =
+    activeTab !== 'chat' ? Math.min(chatUnreadCount, 99) : 0;
+  const gameHasDot = !!isMyTurn && activeTab !== 'game';
+
+  return (
+    <Container>
+      {!user.is_admin && (
+        <HelpButton type="button" onClick={() => setShowHelpModal(true)}>
+          도움말
+        </HelpButton>
+      )}
+      <Header>
+        <UserInfo>
+          <ProfileImage
+            onClick={() => setShowProfileModal(true)}
+            style={{ cursor: 'pointer' }}
+            title="프로필 사진 변경"
+          >
+            <Image
+              src={getProfileImagePath(user.profile_image || 'Nahida')}
+              alt={user.name}
+              width={36}
+              height={36}
+              style={{ borderRadius: '50%', objectFit: 'cover' }}
+            />
+          </ProfileImage>
+          <UserName
+            onClick={() => setShowNicknameModal(true)}
+            style={{ cursor: 'pointer' }}
+            title="클릭하여 닉네임 변경"
+          >
+            {user.name}
+          </UserName>
+          <LogoutButton onClick={handleLogout}>로그아웃</LogoutButton>
+        </UserInfo>
+      </Header>
+
+      <BingoGameTabs
+        activeTab={activeTab}
+        onTabChange={setActiveTab}
+        gameHasDot={gameHasDot}
+        chatBadgeCount={chatBadgeCount}
+        gamePanel={gamePanel}
+        rankingPanel={rankingPanel}
+        chatPanel={chatPanel}
+      />
 
       {/* 게임 종료 모달 */}
       <FinishModal

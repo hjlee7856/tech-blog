@@ -68,12 +68,6 @@ export function useOnlinePresenceUserIds(
     ensurePresenceSubscribed({
       userId,
       onStatus: (status: string) => {
-        console.log('[presence] subscribe status', {
-          status,
-          userId,
-          presenceKey: String(userId),
-        });
-
         if (status !== 'SUBSCRIBED') return;
 
         setIsPresenceSubscribed(true);
@@ -84,9 +78,6 @@ export function useOnlinePresenceUserIds(
             profile_image: profileImage,
             typing: false,
             sent_at: new Date().toISOString(),
-          })
-          .then((result: unknown) => {
-            console.log('[presence] track result', { userId, result });
           })
           .catch((err: unknown) => {
             console.error('[presence] track error', { userId, err });

@@ -366,14 +366,13 @@ export async function nextTurn(
 // - 게임 상태가 없거나 이미 종료된 경우: 아무 것도 하지 않음
 // - 참여 중인 플레이어(order > 0)가 하나도 없는 경우: 아무 것도 하지 않음
 // - OFFLINE_GRACE_MS 이후, presence 기반 onlineUserIds에 현재 턴 플레이어가 없으면 오프라인으로 간주하고 턴을 넘김
-export async function validateAndAutoAdvanceTurn({
-  onlineUserIds,
-}: {
+export async function validateAndAutoAdvanceTurn(args?: {
   onlineUserIds: number[];
 }): Promise<{
   advanced: boolean;
   reason?: string;
 }> {
+  const resolvedOnlineUserIds = args?.onlineUserIds ?? [];
   const { data: rawState, error: stateError } = await supabase
     .from('genshin-bingo-game-state')
     .select('*')
@@ -390,8 +389,10 @@ export async function validateAndAutoAdvanceTurn({
   const players = await getAllPlayers();
 
   const activePlayers =
-    onlineUserIds.length > 0
-      ? players.filter((p) => p.order > 0 && onlineUserIds.includes(p.id))
+    resolvedOnlineUserIds.length > 0
+      ? players.filter(
+          (p) => p.order > 0 && resolvedOnlineUserIds.includes(p.id),
+        )
       : players.filter((p) => p.order > 0);
   if (activePlayers.length === 0)
     return { advanced: false, reason: 'no_active_players' };
@@ -401,7 +402,10 @@ export async function validateAndAutoAdvanceTurn({
   );
 
   if (!currentPlayer) {
-    const moved = await nextTurn(gameState.current_order, onlineUserIds);
+    const moved = await nextTurn(
+      gameState.current_order,
+      resolvedOnlineUserIds,
+    );
     const previousCurrentPlayer = players.find(
       (p) => p.order === gameState.current_order,
     );
@@ -425,11 +429,12 @@ export async function validateAndAutoAdvanceTurn({
     return { advanced: false, reason: 'grace_period' };
 
   const isCurrentOnline =
-    onlineUserIds.length === 0 || onlineUserIds.includes(currentPlayer.id);
+    resolvedOnlineUserIds.length === 0 ||
+    resolvedOnlineUserIds.includes(currentPlayer.id);
 
   if (isCurrentOnline) return { advanced: false, reason: 'turn_valid' };
 
-  const moved = await nextTurn(gameState.current_order, onlineUserIds);
+  const moved = await nextTurn(gameState.current_order, resolvedOnlineUserIds);
 
   await updatePlayerOrder(currentPlayer.id, 0);
 
@@ -800,7 +805,9 @@ export function subscribeToGameState(callback: (state: GameState) => void) {
 
 export function subscribeToPlayers(callback: (players: Player[]) => void) {
   const channelName = `players-${Math.random().toString(36).slice(7)}`;
-  return supabase
+  let debounceTimeout: ReturnType<typeof setTimeout> | null = null;
+
+  const channel = supabase
     .channel(channelName)
     .on(
       'postgres_changes',
@@ -815,11 +822,28 @@ export function subscribeToPlayers(callback: (players: Player[]) => void) {
         )
           return;
 
-        const players = await getAllPlayers();
-        callback(players);
+        if (debounceTimeout) clearTimeout(debounceTimeout);
+        debounceTimeout = setTimeout(() => {
+          debounceTimeout = null;
+          void getAllPlayers().then((players) => {
+            callback(players);
+          });
+        }, 250);
       },
     )
     .subscribe();
+
+  const originalUnsubscribe = channel.unsubscribe.bind(channel);
+  channel.unsubscribe = async () => {
+    if (debounceTimeout) {
+      clearTimeout(debounceTimeout);
+      debounceTimeout = null;
+    }
+
+    return originalUnsubscribe();
+  };
+
+  return channel;
 }
 
 function isOnlyLastSeenChanged({
