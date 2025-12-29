@@ -42,7 +42,14 @@ export function ProfileSidebar({
     <>
       {isOpen && <SidebarOverlay />}
       <Sidebar isOpen={isOpen}>
-        <div style={{ position: 'relative', width: '100px', height: '100px' }}>
+        <div
+          style={{
+            position: 'relative',
+            width: '100px',
+            height: '100px',
+            marginBottom: '12px',
+          }}
+        >
           {profileImage && <ProfileImage src={profileImage} alt={name} />}
           <svg
             className="hidden"
@@ -56,7 +63,6 @@ export function ProfileSidebar({
               borderRadius: '50%',
               backgroundColor: '#e5e7eb',
               border: '3px solid #fff',
-              boxShadow: '0 4px 12px rgba(0, 0, 0, 0.12)',
             }}
           >
             <circle cx="50" cy="35" r="18" fill="#9ca3af" />

@@ -1,5 +1,6 @@
 'use client';
 
+import { Header } from '@/components/Header/Header';
 import type { PageProps } from '@/lib/types';
 import { useDarkMode } from '@/lib/use-dark-mode';
 import { NotionPostPage } from 'app/(blog)/post/[pageId]/components/NotionPostPage';
@@ -13,6 +14,7 @@ export function NotionPostPageClient({ ...props }: NotionPostPageClientProps) {
 
   return (
     <div className="post">
+      <Header />
       <NotionPostPage {...props} isDarkMode={isDarkMode} />
     </div>
   );

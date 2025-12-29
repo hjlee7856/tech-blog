@@ -1,13 +1,14 @@
+import Link from 'next/link';
+
 import { styled } from '@/styled-system/jsx';
 
 export const HeaderContainer = styled('header', {
   base: {
-    display: { pc: 'none', pcDown: 'flex' },
+    display: 'flex',
     width: '100%',
     height: '56px',
-    backgroundColor: '#1f2937',
-    opacity: 0.8,
-    backdropFilter: 'none',
+    backgroundColor: 'rgba(17, 24, 39, 0.96)',
+    backdropFilter: 'blur(8px)',
     borderBottom: '1px solid rgba(0, 0, 0, 0.3)',
     boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
     position: 'sticky',
@@ -57,6 +58,40 @@ export const HeaderRight = styled('div', {
   },
 });
 
+export const HeaderNav = styled('nav', {
+  base: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '10px',
+    color: '#fff',
+  },
+});
+
+export const HeaderNavLink = styled(Link, {
+  base: {
+    display: 'inline-flex',
+    alignItems: 'center',
+    height: '32px',
+    paddingInline: '10px',
+    borderRadius: '8px',
+    fontSize: '13px',
+    fontWeight: '600',
+    color: '#f9fafb',
+    textDecoration: 'none',
+    transition: 'all 0.2s ease',
+    _visited: {
+      color: '#f9fafb',
+    },
+    _hover: {
+      backgroundColor: 'rgba(255, 255, 255, 0.12)',
+      color: '#fff',
+    },
+    _active: {
+      backgroundColor: 'rgba(255, 255, 255, 0.15)',
+    },
+  },
+});
+
 export const SidebarToggleButton = styled('button', {
   base: {
     backgroundColor: 'transparent',
@@ -67,7 +102,7 @@ export const SidebarToggleButton = styled('button', {
     fontSize: '18px',
     cursor: 'pointer',
     transition: 'all 0.2s ease',
-    display: 'flex',
+    display: { pc: 'none', pcDown: 'flex' },
     alignItems: 'center',
     justifyContent: 'center',
     fontWeight: '500',

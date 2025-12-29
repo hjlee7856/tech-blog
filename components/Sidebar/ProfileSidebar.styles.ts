@@ -1,23 +1,30 @@
 import { styled } from '@/styled-system/jsx';
 
+const headerHeightPx = 56;
+
 export const Sidebar = styled('aside', {
   base: {
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
-    gap: '20px',
+    gap: '16px',
     padding: '32px 24px',
     borderRadius: { pc: '12px', pcDown: 0 },
     backgroundColor: '#f9fafb',
     border: { pc: '1px solid #e5e7eb', pcDown: 'none' },
     boxShadow: { pc: '0px 2px 8px rgba(0, 0, 0, 0.08)', pcDown: 'none' },
-    height: { pc: '100vh', pcDown: '100vh' },
+    height: {
+      pc: `calc(100vh - ${headerHeightPx}px)`,
+      pcDown: `calc(100vh - ${headerHeightPx}px)`,
+    },
     width: { pc: '280px', pcDown: '280px' },
     minWidth: { pc: '280px', pcDown: '280px' },
     maxWidth: { pc: '280px', pcDown: '280px' },
     flexShrink: 0,
+    minHeight: 0,
+    overflowY: 'auto',
     position: { pc: 'sticky', pcDown: 'fixed' },
-    top: { pc: '0px', pcDown: 0 },
+    top: { pc: `${headerHeightPx}px`, pcDown: `${headerHeightPx}px` },
     left: { pc: 'auto', pcDown: 0 },
     zIndex: { pc: 'auto', pcDown: 101 },
     transform: { pc: 'none', pcDown: 'translateX(-100%)' },
@@ -49,18 +56,24 @@ export const Name = styled('h3', {
     fontSize: '18px',
     fontWeight: '700',
     color: '#111827',
-    margin: '8px 0 0 0',
+    margin: '6px 0 0 0',
     textAlign: 'center',
     letterSpacing: '-0.5px',
+    lineHeight: '1.25',
   },
 });
 
 export const Email = styled('a', {
   base: {
+    display: 'block',
     fontSize: '13px',
     color: '#6b7280',
     textDecoration: 'none',
     transition: 'color 0.2s ease',
+    lineHeight: '1.25',
+    maxWidth: '100%',
+    overflowWrap: 'anywhere',
+    textAlign: 'center',
     _hover: {
       color: '#3b82f6',
     },
@@ -152,7 +165,7 @@ export const SidebarOverlay = styled('div', {
   base: {
     display: 'none',
     position: 'fixed',
-    top: 0,
+    top: `${headerHeightPx}px`,
     left: 0,
     right: 0,
     bottom: 0,
