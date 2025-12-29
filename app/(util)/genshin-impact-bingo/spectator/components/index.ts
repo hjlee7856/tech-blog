@@ -1,1 +1,0 @@
-export { SpectatorPanel } from './SpectatorPanel';
