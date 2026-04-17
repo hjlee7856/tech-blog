@@ -11,7 +11,7 @@ export const handleNotionPagesByCategory = async (
   page = 1,
   pageSize = 12,
 ): Promise<NotionPagesByCategoryResult> => {
-  if (!category.trim()) return { data: [], total: 0 };
+  if (!category.trim() || !supabase) return { data: [], total: 0 };
   try {
     const from = (page - 1) * pageSize;
     const to = from + pageSize - 1;

@@ -9,6 +9,10 @@ type NotionCategory = {
 };
 
 const getNotionCategoriesUncached = async (): Promise<NotionCategory[]> => {
+  if (!supabase) {
+    return [];
+  }
+
   try {
     const { data, error } = await supabase
       .from('notion_categories')

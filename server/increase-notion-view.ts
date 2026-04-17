@@ -1,7 +1,7 @@
 import { supabase } from '@/lib/supabaseClient';
 
 export async function increaseNotionView(pageId: string): Promise<boolean> {
-  if (!pageId || typeof pageId !== 'string') {
+  if (!pageId || typeof pageId !== 'string' || !supabase) {
     return false;
   }
 

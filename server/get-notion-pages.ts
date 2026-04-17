@@ -13,6 +13,10 @@ const getNotionPagesUncached = async (
   page = 1,
   pageSize = 12,
 ): Promise<NotionPagesResult> => {
+  if (!supabase) {
+    return { data: [], total: 0 };
+  }
+
   try {
     const from = (page - 1) * pageSize;
     const to = from + pageSize - 1;

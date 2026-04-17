@@ -11,7 +11,7 @@ export const getSearchedNotionPages = async (
   page = 1,
   pageSize = 12,
 ): Promise<SearchNotionPagesResult> => {
-  if (!keyword) return { data: [], total: 0 };
+  if (!keyword || !supabase) return { data: [], total: 0 };
   try {
     const from = (page - 1) * pageSize;
     const to = from + pageSize - 1;
