@@ -1,10 +1,36 @@
-import { CategoryFilterSkeleton } from './CategoryFilterSkeleton'
-import { ActiveButton, Button, Container } from './NotionCategoryFilter.styles'
+import { Flex, Tag } from 'antd';
+
+import { CategoryFilterSkeleton } from './CategoryFilterSkeleton';
 
 interface NotionCategoryFilterProps {
-  onCategoryChange: (category: string) => void
-  activeCategory: string
-  categories: { category: string; order: number; count: number }[]
+  onCategoryChange: (category: string) => void;
+  activeCategory: string;
+  categories: { category: string; order: number; count: number }[];
+}
+
+function CategoryTag({
+  active,
+  label,
+  onClick,
+}: {
+  active: boolean;
+  label: string;
+  onClick: () => void;
+}) {
+  return (
+    <Tag
+      color={active ? 'blue' : 'default'}
+      onClick={onClick}
+      style={{
+        cursor: 'pointer',
+        marginInlineEnd: 0,
+        padding: '6px 10px',
+        borderRadius: 16,
+      }}
+    >
+      {label}
+    </Tag>
+  );
 }
 
 export function NotionCategoryFilter({
@@ -13,37 +39,26 @@ export function NotionCategoryFilter({
   categories,
 }: NotionCategoryFilterProps) {
   if (!categories || categories.length === 0) {
-    return <CategoryFilterSkeleton />
+    return <CategoryFilterSkeleton />;
   }
 
+  const totalCount = categories.reduce((total, cat) => total + cat.count, 0);
+
   return (
-    <Container>
-      {activeCategory === '전체' ? (
-        <ActiveButton onClick={() => onCategoryChange('전체')}>
-          전체 ({categories.reduce((total, cat) => total + cat.count, 0)})
-        </ActiveButton>
-      ) : (
-        <Button onClick={() => onCategoryChange('전체')}>
-          전체 ({categories.reduce((total, cat) => total + cat.count, 0)})
-        </Button>
-      )}
+    <Flex wrap gap={8}>
+      <CategoryTag
+        active={activeCategory === '전체'}
+        onClick={() => onCategoryChange('전체')}
+        label={`전체 (${totalCount})`}
+      />
       {categories.map((cat) => (
-        activeCategory === cat.category ? (
-          <ActiveButton
-            key={cat.category}
-            onClick={() => onCategoryChange(cat.category)}
-          >
-            {cat.category} ({cat.count})
-          </ActiveButton>
-        ) : (
-          <Button
-            key={cat.category}
-            onClick={() => onCategoryChange(cat.category)}
-          >
-            {cat.category} ({cat.count})
-          </Button>
-        )
+        <CategoryTag
+          key={cat.category}
+          active={activeCategory === cat.category}
+          onClick={() => onCategoryChange(cat.category)}
+          label={`${cat.category} (${cat.count})`}
+        />
       ))}
-    </Container>
-  )
+    </Flex>
+  );
 }

@@ -1,19 +1,10 @@
 'use client';
 
+import { Avatar, Button, Drawer, Grid, Layout, Space, Typography } from 'antd';
 import { NotionCategoryFilter } from 'app/(blog)/components/Category/NotionCategoryFilter';
-import { FaGithub } from 'react-icons/fa';
-import {
-  Bio,
-  CategoryList,
-  CategoryTitle,
-  Divider,
-  Email,
-  GithubLink,
-  Name,
-  ProfileImage,
-  Sidebar,
-  SidebarOverlay,
-} from './ProfileSidebar.styles';
+import { FaGithub, FaUser } from 'react-icons/fa';
+
+const { Sider } = Layout;
 
 interface ProfileSidebarProps {
   profileImage?: string;
@@ -25,6 +16,64 @@ interface ProfileSidebarProps {
   activeCategory?: string;
   onCategoryChange?: (category: string) => void;
   isOpen?: boolean;
+  onClose?: () => void;
+}
+
+function SidebarContent({
+  profileImage,
+  name,
+  email,
+  bio,
+  githubUrl,
+  categories,
+  activeCategory,
+  onCategoryChange,
+}: Omit<ProfileSidebarProps, 'isOpen'>) {
+  return (
+    <Space direction="vertical" size={12} style={{ width: '100%' }}>
+      <div style={{ display: 'flex', justifyContent: 'center' }}>
+        <Avatar
+          size={96}
+          src={profileImage}
+          icon={!profileImage ? <FaUser /> : undefined}
+        />
+      </div>
+      <Typography.Title level={5} style={{ margin: 0, textAlign: 'center' }}>
+        {name}
+      </Typography.Title>
+      <Typography.Link href={`mailto:${email}`} style={{ textAlign: 'center' }}>
+        {email}
+      </Typography.Link>
+      <Typography.Text type="secondary" style={{ textAlign: 'center' }}>
+        {bio}
+      </Typography.Text>
+
+      {githubUrl && (
+        <Button
+          href={githubUrl}
+          icon={<FaGithub />}
+          target="_blank"
+          rel="noopener noreferrer"
+          block
+        >
+          GitHub
+        </Button>
+      )}
+
+      {categories && categories.length > 0 && (
+        <>
+          <Typography.Title level={5} style={{ marginTop: 8, marginBottom: 0 }}>
+            카테고리
+          </Typography.Title>
+          <NotionCategoryFilter
+            activeCategory={activeCategory || ''}
+            categories={categories}
+            onCategoryChange={onCategoryChange || (() => {})}
+          />
+        </>
+      )}
+    </Space>
+  );
 }
 
 export function ProfileSidebar({
@@ -37,68 +86,56 @@ export function ProfileSidebar({
   activeCategory = '',
   onCategoryChange,
   isOpen = false,
+  onClose,
 }: ProfileSidebarProps) {
+  const screens = Grid.useBreakpoint();
+  const isMobile = !screens.lg;
+
+  if (isMobile) {
+    return (
+      <Drawer
+        title="프로필"
+        placement="left"
+        onClose={onClose}
+        open={isOpen}
+        width={300}
+        styles={{ body: { paddingTop: 8 } }}
+      >
+        <SidebarContent
+          profileImage={profileImage}
+          name={name}
+          email={email}
+          bio={bio}
+          githubUrl={githubUrl}
+          categories={categories}
+          activeCategory={activeCategory}
+          onCategoryChange={onCategoryChange}
+        />
+      </Drawer>
+    );
+  }
+
   return (
-    <>
-      {isOpen && <SidebarOverlay />}
-      <Sidebar isOpen={isOpen}>
-        <div
-          style={{
-            position: 'relative',
-            width: '100px',
-            height: '100px',
-            marginBottom: '12px',
-          }}
-        >
-          {profileImage && <ProfileImage src={profileImage} alt={name} />}
-          <svg
-            className="hidden"
-            width="100"
-            height="100"
-            viewBox="0 0 100 100"
-            style={{
-              position: 'absolute',
-              top: 0,
-              left: 0,
-              borderRadius: '50%',
-              backgroundColor: '#e5e7eb',
-              border: '3px solid #fff',
-            }}
-          >
-            <circle cx="50" cy="35" r="18" fill="#9ca3af" />
-            <path
-              d="M 20 70 Q 20 55 50 55 Q 80 55 80 70 L 80 100 Q 80 100 50 100 Q 20 100 20 100 Z"
-              fill="#9ca3af"
-            />
-          </svg>
-        </div>
-        <Name>{name}</Name>
-        <Email href={`mailto:${email}`}>{email}</Email>
-        <Bio>{bio}</Bio>
-        {githubUrl && (
-          <GithubLink
-            href={githubUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <FaGithub size={16} />
-            GitHub
-          </GithubLink>
-        )}
-        {categories.length > 0 && (
-          <>
-            <Divider />
-            <CategoryTitle>카테고리</CategoryTitle>
-            <CategoryList>
-              <NotionCategoryFilter
-                activeCategory={activeCategory}
-                categories={categories}
-                onCategoryChange={onCategoryChange || (() => {})}
-              />
-            </CategoryList>
-          </>
-        )}
-      </Sidebar>
-    </>
+    <Sider
+      width={280}
+      theme="light"
+      style={{
+        background: '#fff',
+        borderRight: '1px solid #f0f0f0',
+        padding: 20,
+        minHeight: 'calc(100vh - 64px)',
+      }}
+    >
+      <SidebarContent
+        profileImage={profileImage}
+        name={name}
+        email={email}
+        bio={bio}
+        githubUrl={githubUrl}
+        categories={categories}
+        activeCategory={activeCategory}
+        onCategoryChange={onCategoryChange}
+      />
+    </Sider>
   );
 }

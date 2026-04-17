@@ -75,6 +75,11 @@ export function NotionDomainPageClient({
     }
   };
 
+  const handleCategorySelect = (category: string) => {
+    handleCategoryChange(category);
+    setIsSidebarOpen(false);
+  };
+
   return (
     <div>
       <Header
@@ -89,23 +94,10 @@ export function NotionDomainPageClient({
           githubUrl="https://github.com/hjlee7856"
           categories={categories}
           activeCategory={activeCategory}
-          onCategoryChange={handleCategoryChange}
+          onCategoryChange={handleCategorySelect}
           isOpen={isSidebarOpen}
+          onClose={() => setIsSidebarOpen(false)}
         />
-        {isSidebarOpen && (
-          <div
-            onClick={() => setIsSidebarOpen(false)}
-            style={{
-              position: 'fixed',
-              top: 0,
-              left: 0,
-              right: 0,
-              bottom: 0,
-              backgroundColor: 'rgba(0, 0, 0, 0.5)',
-              zIndex: 100,
-            }}
-          />
-        )}
         <MainContent>
           {initialPages.length === 0 ? (
             <NotionGalleryCarousel pages={items.slice(0, 10)} />

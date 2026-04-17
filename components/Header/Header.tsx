@@ -1,15 +1,8 @@
 'use client';
 
-import {
-  HeaderContainer,
-  HeaderContent,
-  HeaderLeft,
-  HeaderNav,
-  HeaderNavLink,
-  HeaderRight,
-  HeaderTitle,
-  SidebarToggleButton,
-} from './Header.styles';
+import Link from 'next/link';
+
+import { Button, Layout, Space, Typography } from 'antd';
 
 interface HeaderProps {
   onToggleSidebar?: () => void;
@@ -23,33 +16,75 @@ export function Header({
   links = headerLinkItems,
 }: HeaderProps) {
   return (
-    <HeaderContainer>
-      <HeaderContent>
-        <HeaderLeft>
+    <Layout.Header
+      style={{
+        position: 'sticky',
+        top: 0,
+        zIndex: 120,
+        background: '#fff',
+        borderBottom: '1px solid #f0f0f0',
+        padding: '0 16px',
+        height: 'auto',
+        lineHeight: 'normal',
+      }}
+    >
+      <div
+        style={{
+          minHeight: 64,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          gap: 12,
+          maxWidth: 1200,
+          margin: '0 auto',
+        }}
+      >
+        <div style={{ width: 52 }}>
           {showToggle && (
-            <SidebarToggleButton onClick={onToggleSidebar}>
+            <Button
+              type="text"
+              onClick={onToggleSidebar}
+              aria-label="사이드바 열기"
+            >
               ☰
-            </SidebarToggleButton>
+            </Button>
           )}
-        </HeaderLeft>
-        <HeaderTitle>HJ's Blog</HeaderTitle>
-        <HeaderRight>
-          <HeaderNav>
-            {links.map((linkItem) => (
-              <HeaderNavLink
+        </div>
+
+        <Typography.Title level={4} style={{ margin: 0, whiteSpace: 'nowrap' }}>
+          HJ&apos;s Blog
+        </Typography.Title>
+
+        <Space size={8} wrap style={{ justifyContent: 'flex-end' }}>
+          {links.map((linkItem) => {
+            if (linkItem.isExternal) {
+              return (
+                <Button
+                  key={`${linkItem.href}:${linkItem.label}`}
+                  type="link"
+                  href={linkItem.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{ paddingInline: 6 }}
+                >
+                  {linkItem.label}
+                </Button>
+              );
+            }
+
+            return (
+              <Link
                 key={`${linkItem.href}:${linkItem.label}`}
                 href={linkItem.href}
-                {...(linkItem.isExternal
-                  ? { target: '_blank', rel: 'noopener noreferrer' }
-                  : {})}
+                style={{ paddingInline: 6, color: '#1677ff' }}
               >
                 {linkItem.label}
-              </HeaderNavLink>
-            ))}
-          </HeaderNav>
-        </HeaderRight>
-      </HeaderContent>
-    </HeaderContainer>
+              </Link>
+            );
+          })}
+        </Space>
+      </div>
+    </Layout.Header>
   );
 }
 

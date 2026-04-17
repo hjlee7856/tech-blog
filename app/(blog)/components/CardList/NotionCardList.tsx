@@ -1,9 +1,10 @@
 import Image from 'next/image';
+import Link from 'next/link';
 import React from 'react';
 
-import type { NotionPage } from '@/lib/notion-page';
+import { Card, Col, Row, Space, Tag, Typography } from 'antd';
 
-import { Body, Card, Category, Cover, CoverPlaceholder, Grid, Summary, Title } from './NotionCardList.styles';
+import type { NotionPage } from '@/lib/notion-page';
 
 interface NotionCardListProps {
   pages: NotionPage[];
@@ -13,11 +14,17 @@ interface NotionCardListProps {
 function highlight(text: string, keyword: string) {
   if (!keyword || keyword.trim() === '') return text;
   // eslint-disable-next-line security/detect-non-literal-regexp
-  const regex = new RegExp(`(${keyword.replaceAll(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
+  const regex = new RegExp(
+    `(${keyword.replaceAll(/[.*+?^${}()|[\]\\]/g, '\\$&')})`,
+    'gi',
+  );
   const parts = text.split(regex);
   return parts.map((part, i) =>
     regex.test(part) ? (
-      <mark key={i} style={{ background: '#ffe066', color: 'inherit', padding: 0 }}>
+      <mark
+        key={i}
+        style={{ background: '#ffe066', color: 'inherit', padding: 0 }}
+      >
         {part}
       </mark>
     ) : (
@@ -28,96 +35,76 @@ function highlight(text: string, keyword: string) {
 
 export function NotionCardList({ pages, searchTerm }: NotionCardListProps) {
   return (
-    <Grid>
+    <Row gutter={[16, 16]}>
       {pages.map((page) => (
-        <Card
-          key={page.id}
-          href={`/post/${page.id}`}
-          tabIndex={0}
-          aria-label={page.title}
-        >
-          <Cover>
-            {page.cover ? (
-              <div
-                style={{
-                  position: 'relative',
-                  flex: 1,
-                  width: '100%',
-                  height: '100%',
-                  aspectRatio: '16/10',
-                }}
-              >
-                <Image
-                  src={`${page.cover}`}
-                  alt={page.title}
-                  loading="lazy"
-                  fill
-                  sizes="(max-width: 600px) 100vw, 300px"
-                />
-              </div>
-            ) : (
-              <CoverPlaceholder />
-            )}
-          </Cover>
-          <Body>
-            {page.category && page.created_date && (
-              <Category
-                style={{
-                  WebkitLineClamp: 1,
-                  lineClamp: 1,
-                }}
-              >
-                <div
-                  style={{
-                    display: 'inline-block',
-                    color: '#868b94',
-                    backgroundColor: '#f2f3f6',
-                    borderRadius: '16px',
-                    padding: '0.25rem 0.5rem',
-                  }}
-                >
-                  {page.category}
-                </div>
-                <div
-                  style={{
-                    color: '#868b94',
-                    display: 'inline-block',
-                    marginLeft: '0.5rem',
-                  }}
-                >
-                  |
-                </div>
-                <div
-                  style={{
-                    marginLeft: '0.5rem',
-                    display: 'inline-block',
-                    color: '#868b94',
-                  }}
-                >
-                  {page.created_date}
-                </div>
-              </Category>
-            )}
-            <div
-              style={{
-                paddingRight: '1rem',
-                display: 'flex',
-                flexDirection: 'column',
-                gap: '0.5rem',
-              }}
+        <Col key={page.id} xs={24} sm={12} lg={8}>
+          <Link
+            href={`/post/${page.id}`}
+            style={{ display: 'block', height: '100%' }}
+          >
+            <Card
+              hoverable
+              style={{ height: '100%' }}
+              cover={
+                page.cover ? (
+                  <div
+                    style={{
+                      position: 'relative',
+                      width: '100%',
+                      aspectRatio: '16/10',
+                    }}
+                  >
+                    <Image
+                      src={`${page.cover}`}
+                      alt={page.title}
+                      loading="lazy"
+                      fill
+                      sizes="(max-width: 600px) 100vw, 300px"
+                    />
+                  </div>
+                ) : (
+                  <div
+                    style={{
+                      width: '100%',
+                      aspectRatio: '16/10',
+                      background: '#f5f5f5',
+                    }}
+                  />
+                )
+              }
             >
-              <Title>
-                {highlight(page.title, searchTerm)}
-              </Title>
-              {page.description && (
-                <Summary>
-                  {highlight(page.description, searchTerm)}
-                </Summary>
-              )}
-            </div>
-          </Body>
-        </Card>
+              <Space direction="vertical" size={8} style={{ width: '100%' }}>
+                {page.category && page.created_date && (
+                  <Space size={6} wrap>
+                    <Tag>{page.category}</Tag>
+                    <Typography.Text type="secondary">
+                      {page.created_date}
+                    </Typography.Text>
+                  </Space>
+                )}
+
+                <Typography.Title
+                  level={5}
+                  style={{ margin: 0 }}
+                  ellipsis={{ rows: 2 }}
+                >
+                  {highlight(page.title, searchTerm)}
+                </Typography.Title>
+
+                {page.description && (
+                  <Typography.Paragraph
+                    type="secondary"
+                    style={{ marginBottom: 0 }}
+                    ellipsis={{ rows: 3 }}
+                  >
+                    {highlight(page.description, searchTerm)}
+                  </Typography.Paragraph>
+                )}
+              </Space>
+            </Card>
+          </Link>
+        </Col>
       ))}
-    </Grid>
-  )
+    </Row>
+  );
 }
