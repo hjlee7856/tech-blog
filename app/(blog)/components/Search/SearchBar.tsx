@@ -1,6 +1,7 @@
 import React from 'react';
 
-import { Input } from 'antd';
+import { SearchOutlined } from '@ant-design/icons';
+import { Card, Input } from 'antd';
 
 interface SearchBarProps {
   value: string;
@@ -17,12 +18,26 @@ export function SearchBar({
   onSearch,
   onKeyDown,
   loading = false,
-  placeholder = '제목 / 소개글 검색',
+  placeholder = '검색',
 }: SearchBarProps) {
   return (
-    <div style={{ width: '100%', marginBottom: 16 }}>
+    <Card
+      variant="borderless"
+      style={{
+        width: '100%',
+        marginBottom: 24,
+        borderRadius: 20,
+        background: 'rgba(255,252,247,0.78)',
+        border: '1px solid rgba(125, 105, 74, 0.12)',
+        boxShadow: 'none',
+      }}
+      styles={{ body: { padding: 14 } }}
+    >
       <Input.Search
         allowClear
+        id="blog-search"
+        name="blog-search"
+        aria-label="블로그 글 검색"
         value={value}
         onChange={onChange}
         onSearch={onSearch}
@@ -30,8 +45,9 @@ export function SearchBar({
         placeholder={placeholder}
         loading={loading}
         enterButton="검색"
+        prefix={<SearchOutlined style={{ color: '#6b7280' }} />}
         size="large"
       />
-    </div>
+    </Card>
   );
 }

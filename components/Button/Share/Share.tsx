@@ -3,7 +3,6 @@
 import { useState } from 'react';
 import { FaRegShareSquare } from 'react-icons/fa';
 
-// ... (기존 import 및 함수 선언부는 동일)
 export function ShareButton() {
   const [copied, setCopied] = useState(false);
 
@@ -13,7 +12,7 @@ export function ShareButton() {
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     } catch {
-      alert('복사에 실패했습니다.');
+      alert('주소 복사에 실패했습니다.');
     }
   };
 
@@ -26,15 +25,15 @@ export function ShareButton() {
         style={{
           display: 'flex',
           alignItems: 'center',
-          border: '1px solid #bdbdbd',
+          border: '1px solid #d0d8e6',
           borderRadius: '999px',
-          padding: '6px 18px',
+          padding: '10px 18px',
           background: 'white',
           cursor: 'pointer',
           fontSize: 16,
-          color: '#757575',
+          color: '#475569',
           gap: 8,
-          transition: 'border 0.2s',
+          transition: 'all 0.2s ease',
           margin: '0 4px',
           marginBottom: '16px',
         }}
@@ -49,7 +48,7 @@ export function ShareButton() {
             left: '50%',
             bottom: 32,
             transform: 'translateX(-50%)',
-            background: '#222',
+            background: '#162033',
             color: '#fff',
             padding: '14px 21px',
             borderRadius: 16,
@@ -57,7 +56,7 @@ export function ShareButton() {
             fontSize: 16,
             fontWeight: 500,
             zIndex: 10_000,
-            minWidth: 300,
+            minWidth: 260,
             textAlign: 'center',
             pointerEvents: 'none',
             transition: 'opacity 0.2s',
@@ -65,7 +64,7 @@ export function ShareButton() {
           role="status"
           aria-live="polite"
         >
-          클립보드에 복사되었습니다.
+          링크가 클립보드에 복사되었습니다.
         </div>
       )}
     </div>

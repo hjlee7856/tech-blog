@@ -4,6 +4,7 @@ import { notFound } from 'next/navigation';
 import { domain } from '@/lib/config';
 import { resolveNotionPage } from '@/lib/resolve-notion-page';
 import { increaseNotionView } from '@/server/increase-notion-view';
+
 import { NotionPostPageClient } from './post-client';
 
 interface PostPageProps {
@@ -24,10 +25,10 @@ export async function generateMetadata({ params }: PostPageProps): Promise<Metad
       return {};
     }
 
-    const keys = Object.keys(props.recordMap?.block || {});
-    const block = props.recordMap?.block?.[keys[0]!]?.value;
+    const keys = Object.keys(props.recordMap.block || {});
+    const block = props.recordMap.block?.[keys[0]!]?.value;
 
-    const title = block?.properties?.title?.[0]?.[0] || 'HJ의 기술블로그';
+    const title = block?.properties?.title?.[0]?.[0] || 'HJ 기술 블로그';
     const description = block?.properties?.description?.[0]?.[0] || props.site?.description || '';
     const image = block?.format?.page_cover || props.site?.image;
 
@@ -49,7 +50,7 @@ export async function generateMetadata({ params }: PostPageProps): Promise<Metad
       },
     };
   } catch (err) {
-    console.error('❌ Failed to generate metadata for page:', pageId, err);
+    console.error('Failed to generate metadata for page:', pageId, err);
     return {};
   }
 }
@@ -65,7 +66,7 @@ export default async function PostPage({ params }: PostPageProps) {
   try {
     props = await resolveNotionPage(domain, pageId);
   } catch (err) {
-    console.error('❌ Failed to load page:', pageId, err);
+    console.error('Failed to load page:', pageId, err);
     notFound();
   }
 

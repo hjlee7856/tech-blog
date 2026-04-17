@@ -1,4 +1,4 @@
-import { useSearchParams } from 'next/navigation';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import type { NotionPage } from '@/lib/notion-page';
@@ -6,6 +6,8 @@ import type { NotionPage } from '@/lib/notion-page';
 import { getNotionCategories } from '../server/get-notion-categories';
 import { handleNotionPagesByCategory } from '../server/get-notion-pages-by-category';
 import { getSearchedNotionPages } from '../server/get-notion-pages-by-search';
+
+const ALL_CATEGORY = '전체';
 
 interface UseNotionDataProps {
   initialPages: NotionPage[];
@@ -20,10 +22,12 @@ export function useNotionData({
   initialCategories,
   pageSize,
 }: UseNotionDataProps) {
+  const router = useRouter();
+  const pathname = usePathname();
   const searchParams = useSearchParams();
   const categoryParam = searchParams.get('category');
   const categoryFromUrl = useMemo(
-    () => (categoryParam ? decodeURIComponent(categoryParam) : '전체'),
+    () => (categoryParam ? decodeURIComponent(categoryParam) : ALL_CATEGORY),
     [categoryParam],
   );
 
@@ -37,20 +41,19 @@ export function useNotionData({
   const [activeCategory, setActiveCategory] = useState(categoryFromUrl);
   const [searchTerm, setSearchTerm] = useState('');
 
-  // 초기 로드 시에만 URL 파라미터로 activeCategory 설정
   useEffect(() => {
     setActiveCategory(categoryFromUrl);
   }, [categoryFromUrl]);
 
-  // 카테고리, 페이지, 검색어 변경 시 데이터 페칭
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
       try {
         let result;
+
         if (searchTerm.trim() !== '') {
           result = await getSearchedNotionPages(searchTerm, currentPage, pageSize);
-        } else if (activeCategory === '전체') {
+        } else if (activeCategory === ALL_CATEGORY) {
           const params = new URLSearchParams({
             page: currentPage.toString(),
             pageSize: pageSize.toString(),
@@ -59,16 +62,11 @@ export function useNotionData({
           if (!res.ok) throw new Error('Failed to fetch pages');
           result = (await res.json()) as { data: NotionPage[]; total: number };
         } else {
-          result = (await handleNotionPagesByCategory(activeCategory, currentPage, pageSize)) as {
-            data: NotionPage[];
-            total: number;
-          };
+          result = await handleNotionPagesByCategory(activeCategory, currentPage, pageSize);
         }
 
-        if (result) {
-          setItems(result.data);
-          setTotal(result.total);
-        }
+        setItems(result.data);
+        setTotal(result.total);
       } catch (err) {
         console.error('Failed to fetch notion data', err);
         setItems([]);
@@ -78,18 +76,15 @@ export function useNotionData({
       }
     };
 
-    // 최초 로드 시 SSR 데이터를 사용하므로, 2페이지부터 혹은 필터링 시에만 fetch
-    if (currentPage > 1 || activeCategory !== '전체' || searchTerm !== '') {
+    if (currentPage > 1 || activeCategory !== ALL_CATEGORY || searchTerm !== '') {
       void fetchData();
+      return;
     }
-    // SSR 데이터로 되돌아갈 때
-    if (currentPage === 1 && activeCategory === '전체' && searchTerm === '') {
-      setItems(initialPages);
-      setTotal(initialTotal);
-    }
-  }, [currentPage, activeCategory, searchTerm, pageSize, initialPages, initialTotal]);
 
-  // 최초 마운트 시 카테고리 데이터가 없으면 클라이언트 사이드에서 가져오기
+    setItems(initialPages);
+    setTotal(initialTotal);
+  }, [activeCategory, currentPage, initialPages, initialTotal, pageSize, searchTerm]);
+
   useEffect(() => {
     const fetchInitialData = async () => {
       try {
@@ -107,17 +102,43 @@ export function useNotionData({
     }
   }, [categories.length]);
 
-  const handleCategoryChange = useCallback((category: string) => {
-    setSearchTerm('');
-    setActiveCategory(category);
-    setCurrentPage(1);
-  }, []);
+  const syncCategoryUrl = useCallback(
+    (nextCategory: string) => {
+      const params = new URLSearchParams(searchParams.toString());
 
-  const handleSearch = useCallback((newSearchTerm: string) => {
-    setActiveCategory('전체');
-    setSearchTerm(newSearchTerm);
-    setCurrentPage(1);
-  }, []);
+      if (nextCategory === ALL_CATEGORY) {
+        params.delete('category');
+      } else {
+        params.set('category', nextCategory);
+      }
+
+      const nextQuery = params.toString();
+      router.replace(nextQuery ? `${pathname}?${nextQuery}` : pathname, {
+        scroll: false,
+      });
+    },
+    [pathname, router, searchParams],
+  );
+
+  const handleCategoryChange = useCallback(
+    (category: string) => {
+      setSearchTerm('');
+      setActiveCategory(category);
+      setCurrentPage(1);
+      syncCategoryUrl(category);
+    },
+    [syncCategoryUrl],
+  );
+
+  const handleSearch = useCallback(
+    (newSearchTerm: string) => {
+      setActiveCategory(ALL_CATEGORY);
+      setSearchTerm(newSearchTerm);
+      setCurrentPage(1);
+      syncCategoryUrl(ALL_CATEGORY);
+    },
+    [syncCategoryUrl],
+  );
 
   return {
     items,

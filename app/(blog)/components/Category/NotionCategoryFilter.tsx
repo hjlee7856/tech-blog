@@ -8,6 +8,8 @@ interface NotionCategoryFilterProps {
   categories: { category: string; order: number; count: number }[];
 }
 
+const ALL_CATEGORY = '전체';
+
 function CategoryTag({
   active,
   label,
@@ -19,13 +21,20 @@ function CategoryTag({
 }) {
   return (
     <Tag
-      color={active ? 'blue' : 'default'}
+      bordered={false}
       onClick={onClick}
       style={{
         cursor: 'pointer',
         marginInlineEnd: 0,
-        padding: '6px 10px',
-        borderRadius: 16,
+        padding: '7px 12px',
+        borderRadius: 999,
+        fontSize: 13,
+        fontWeight: active ? 700 : 500,
+        color: active ? '#1f3f8f' : '#4b5563',
+        background: active ? 'rgba(31, 63, 143, 0.1)' : 'rgba(95, 85, 66, 0.06)',
+        border: active
+          ? '1px solid rgba(31, 63, 143, 0.18)'
+          : '1px solid rgba(95, 85, 66, 0.12)',
       }}
     >
       {label}
@@ -47,9 +56,9 @@ export function NotionCategoryFilter({
   return (
     <Flex wrap gap={8}>
       <CategoryTag
-        active={activeCategory === '전체'}
-        onClick={() => onCategoryChange('전체')}
-        label={`전체 (${totalCount})`}
+        active={activeCategory === ALL_CATEGORY}
+        onClick={() => onCategoryChange(ALL_CATEGORY)}
+        label={`${ALL_CATEGORY} (${totalCount})`}
       />
       {categories.map((cat) => (
         <CategoryTag
@@ -62,3 +71,5 @@ export function NotionCategoryFilter({
     </Flex>
   );
 }
+
+export { ALL_CATEGORY };

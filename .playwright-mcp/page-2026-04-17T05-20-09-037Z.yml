@@ -1,0 +1,291 @@
+- generic [ref=e2]:
+  - banner [ref=e3]:
+    - generic [ref=e4]:
+      - generic [ref=e5]:
+        - button "사이드바 열기" [ref=e7]:
+          - img "menu" [ref=e9]:
+            - img [ref=e10]
+        - generic [ref=e13]:
+          - generic [ref=e14]: Tech Notes
+          - heading "HJ's Blog" [level=4] [ref=e15]
+      - generic [ref=e16]:
+        - link "홈" [ref=e18] [cursor=pointer]:
+          - /url: /
+        - link "GitHub" [ref=e20] [cursor=pointer]:
+          - /url: https://github.com/hjlee7856
+  - region "Featured posts carousel" [ref=e21]:
+    - generic [ref=e24]:
+      - generic [ref=e26]:
+        - img "웹 접근성(A11y)" [ref=e27]
+        - generic [ref=e31]:
+          - generic [ref=e33]:
+            - generic [ref=e34]: Editor Pick
+            - generic [ref=e35]: Frontend
+          - heading "웹 접근성(A11y)" [level=1] [ref=e37]
+          - generic [ref=e39]: 웹 접근성(A11y)
+          - link "읽어보기" [ref=e43] [cursor=pointer]:
+            - /url: /post/2e682666-ec16-80e5-8dde-efc6294732fb
+      - generic [ref=e45]:
+        - img "Webview를 활용한 Scraping" [ref=e46]
+        - generic [ref=e50]:
+          - generic [ref=e52]:
+            - generic [ref=e53]: Editor Pick
+            - generic [ref=e54]: Frontend
+          - heading "Webview를 활용한 Scraping" [level=1] [ref=e56]
+          - generic [ref=e58]: Scraping with Webview
+          - link "읽어보기" [ref=e62] [cursor=pointer]:
+            - /url: /post/2e682666-ec16-8016-98f1-cc19ab0be121
+      - generic [ref=e64]:
+        - img "Ref 넘기기" [ref=e65]
+        - generic [ref=e69]:
+          - generic [ref=e71]:
+            - generic [ref=e72]: Editor Pick
+            - generic [ref=e73]: Next.js
+          - heading "Ref 넘기기" [level=1] [ref=e75]
+          - generic [ref=e77]: Ref를 전달하는 방법
+          - link "읽어보기" [ref=e81] [cursor=pointer]:
+            - /url: /post/2e582666-ec16-808a-bf36-d4c342b0bb28
+      - generic [ref=e83]:
+        - img "Context와 Consumer" [ref=e84]
+        - generic [ref=e88]:
+          - generic [ref=e90]:
+            - generic [ref=e91]: Editor Pick
+            - generic [ref=e92]: Next.js
+          - heading "Context와 Consumer" [level=1] [ref=e94]
+          - generic [ref=e96]: Context와 Consumer 사용법
+          - link "읽어보기" [ref=e100] [cursor=pointer]:
+            - /url: /post/2e582666-ec16-80ad-b2c0-d6a34561e4a0
+      - generic [ref=e102]:
+        - img "n8n으로 AI Workflow 만들기" [ref=e103]
+        - generic [ref=e107]:
+          - generic [ref=e109]:
+            - generic [ref=e110]: Editor Pick
+            - generic [ref=e111]: AI
+          - heading "n8n으로 AI Workflow 만들기" [level=1] [ref=e113]
+          - generic [ref=e115]: n8n 사용법
+          - link "읽어보기" [ref=e119] [cursor=pointer]:
+            - /url: /post/2b882666-ec16-8057-bdd1-ce64da4c06f3
+      - generic [ref=e121]:
+        - img "GPT Prompt로 커스텀 AI Agent 만들기" [ref=e122]
+        - generic [ref=e126]:
+          - generic [ref=e128]:
+            - generic [ref=e129]: Editor Pick
+            - generic [ref=e130]: AI
+          - heading "GPT Prompt로 커스텀 AI Agent 만들기" [level=1] [ref=e132]
+          - generic [ref=e134]: GPT Prompt 사용법
+          - link "읽어보기" [ref=e138] [cursor=pointer]:
+            - /url: /post/2b082666-ec16-80c6-85eb-ebc694870336
+      - generic [ref=e140]:
+        - img "Github Actions" [ref=e141]
+        - generic [ref=e145]:
+          - generic [ref=e147]:
+            - generic [ref=e148]: Editor Pick
+            - generic [ref=e149]: DevOps
+          - heading "Github Actions" [level=1] [ref=e151]
+          - generic [ref=e153]: Github Actions 작성법
+          - link "읽어보기" [ref=e157] [cursor=pointer]:
+            - /url: /post/2a382666-ec16-80e3-9f6c-e1f2c41d4a9c
+      - generic [ref=e159]:
+        - img "Promise" [ref=e160]
+        - generic [ref=e164]:
+          - generic [ref=e166]:
+            - generic [ref=e167]: Editor Pick
+            - generic [ref=e168]: Frontend
+          - heading "Promise" [level=1] [ref=e170]
+          - generic [ref=e172]: Promise의 동작 원리와 정적 메서드
+          - link "읽어보기" [ref=e176] [cursor=pointer]:
+            - /url: /post/2a082666-ec16-80c6-bca7-e54577b3dda1
+      - generic [ref=e178]:
+        - img "쿠키 & Section & JWT" [ref=e179]
+        - generic [ref=e183]:
+          - generic [ref=e185]:
+            - generic [ref=e186]: Editor Pick
+            - generic [ref=e187]: CS
+          - heading "쿠키 & Section & JWT" [level=1] [ref=e189]
+          - generic [ref=e191]: 쿠키 & Section & JWT
+          - link "읽어보기" [ref=e195] [cursor=pointer]:
+            - /url: /post/29f82666-ec16-80c0-afaf-ef3eb3207fb4
+      - generic [ref=e197]:
+        - img "useState & useRef" [ref=e198]
+        - generic [ref=e202]:
+          - generic [ref=e204]:
+            - generic [ref=e205]: Editor Pick
+            - generic [ref=e206]: Next.js
+          - heading "useState & useRef" [level=1] [ref=e208]
+          - generic [ref=e210]: useState와 useRef 차이점
+          - link "읽어보기" [ref=e214] [cursor=pointer]:
+            - /url: /post/29e82666-ec16-803b-a042-fafcb96290ba
+    - generic [ref=e215]:
+      - button "슬라이드 1" [ref=e217] [cursor=pointer]
+      - button "슬라이드 2" [ref=e219] [cursor=pointer]
+      - button "슬라이드 3" [ref=e221] [cursor=pointer]
+      - button "슬라이드 4" [ref=e223] [cursor=pointer]
+      - button "슬라이드 5" [ref=e225] [cursor=pointer]
+      - button "슬라이드 6" [ref=e227] [cursor=pointer]
+      - button "슬라이드 7" [ref=e229] [cursor=pointer]
+      - button "슬라이드 8" [ref=e231] [cursor=pointer]
+      - button "슬라이드 9" [ref=e233] [cursor=pointer]
+      - button "슬라이드 10" [ref=e235] [cursor=pointer]
+  - generic [ref=e236]:
+    - generic [ref=e237]:
+      - text: Archive
+      - heading "엔지니어링 기록과 실전 메모" [level=2] [ref=e238]
+      - generic [ref=e239]: 트러블슈팅, 설계 메모, 실험 결과를 빠르게 훑고 원하는 글로 바로 이동할 수 있게 구성했습니다.
+    - main [ref=e241]:
+      - generic [ref=e243]:
+        - generic [ref=e245]:
+          - text: Search
+          - heading "찾고 싶은 글을 바로 탐색하세요" [level=4] [ref=e246]
+          - text: 카테고리와 키워드를 함께 쓰면 더 빠르게 원하는 내용을 찾을 수 있습니다.
+        - generic [ref=e249]:
+          - generic [ref=e250]:
+            - img "search" [ref=e252]:
+              - img [ref=e253]
+            - searchbox "제목, 설명, 키워드로 포스트 검색" [ref=e255]
+            - button "close-circle" [ref=e257]:
+              - img "close-circle" [ref=e258]:
+                - img [ref=e259]
+          - button "검색" [ref=e262]
+      - generic [ref=e263]:
+        - generic [ref=e265]:
+          - link "웹 접근성(A11y) Frontend 웹 접근성(A11y) 웹 접근성(A11y) 자세히 보기 arrow-right" [ref=e267] [cursor=pointer]:
+            - /url: /post/2e682666-ec16-80e5-8dde-efc6294732fb
+            - generic [ref=e268]:
+              - img "웹 접근성(A11y)" [ref=e271]
+              - generic [ref=e274]:
+                - generic [ref=e277]: Frontend
+                - heading "웹 접근성(A11y)" [level=4] [ref=e279]
+                - generic [ref=e281]: 웹 접근성(A11y)
+                - generic [ref=e283]:
+                  - generic [ref=e284]: 자세히 보기
+                  - img "arrow-right" [ref=e286]:
+                    - img [ref=e287]
+          - link "Webview를 활용한 Scraping Frontend Webview를 활용한 Scraping Scraping with Webview 자세히 보기 arrow-right" [ref=e290] [cursor=pointer]:
+            - /url: /post/2e682666-ec16-8016-98f1-cc19ab0be121
+            - generic [ref=e291]:
+              - img "Webview를 활용한 Scraping" [ref=e294]
+              - generic [ref=e297]:
+                - generic [ref=e300]: Frontend
+                - heading "Webview를 활용한 Scraping" [level=4] [ref=e302]
+                - generic [ref=e304]: Scraping with Webview
+                - generic [ref=e306]:
+                  - generic [ref=e307]: 자세히 보기
+                  - img "arrow-right" [ref=e309]:
+                    - img [ref=e310]
+          - link "Ref 넘기기 Next.js Ref 넘기기 컴포넌트 만들고 Ref 넘기는 방법 자세히 보기 arrow-right" [ref=e313] [cursor=pointer]:
+            - /url: /post/2e582666-ec16-808a-bf36-d4c342b0bb28
+            - generic [ref=e314]:
+              - img "Ref 넘기기" [ref=e317]
+              - generic [ref=e320]:
+                - generic [ref=e323]: Next.js
+                - heading "Ref 넘기기" [level=4] [ref=e325]
+                - generic [ref=e327]: 컴포넌트 만들고 Ref 넘기는 방법
+                - generic [ref=e329]:
+                  - generic [ref=e330]: 자세히 보기
+                  - img "arrow-right" [ref=e332]:
+                    - img [ref=e333]
+          - link "Context와 Consumer Next.js Context와 Consumer Context와 Consumer 차이점과 사용법 자세히 보기 arrow-right" [ref=e336] [cursor=pointer]:
+            - /url: /post/2e582666-ec16-80ad-b2c0-d6a34561e4a0
+            - generic [ref=e337]:
+              - img "Context와 Consumer" [ref=e340]
+              - generic [ref=e343]:
+                - generic [ref=e346]: Next.js
+                - heading "Context와 Consumer" [level=4] [ref=e348]
+                - generic [ref=e350]: Context와 Consumer 차이점과 사용법
+                - generic [ref=e352]:
+                  - generic [ref=e353]: 자세히 보기
+                  - img "arrow-right" [ref=e355]:
+                    - img [ref=e356]
+          - link "n8n으로 AI Workflow 만들기 AI n8n으로 AI Workflow 만들기 n8n으로 AI Workflow 만들기 자세히 보기 arrow-right" [ref=e359] [cursor=pointer]:
+            - /url: /post/2b882666-ec16-8057-bdd1-ce64da4c06f3
+            - generic [ref=e360]:
+              - img "n8n으로 AI Workflow 만들기" [ref=e363]
+              - generic [ref=e366]:
+                - generic [ref=e369]: AI
+                - heading "n8n으로 AI Workflow 만들기" [level=4] [ref=e371]
+                - generic [ref=e373]: n8n으로 AI Workflow 만들기
+                - generic [ref=e375]:
+                  - generic [ref=e376]: 자세히 보기
+                  - img "arrow-right" [ref=e378]:
+                    - img [ref=e379]
+          - link "GPT Prompt로 커스텀 AI Agent 만들기 AI GPT Prompt로 커스텀 AI Agent 만들기 GPT Prompt로 커스텀 AI Agent 만들기 자세히 보기 arrow-right" [ref=e382] [cursor=pointer]:
+            - /url: /post/2b082666-ec16-80c6-85eb-ebc694870336
+            - generic [ref=e383]:
+              - img "GPT Prompt로 커스텀 AI Agent 만들기" [ref=e386]
+              - generic [ref=e389]:
+                - generic [ref=e392]: AI
+                - heading "GPT Prompt로 커스텀 AI Agent 만들기" [level=4] [ref=e394]
+                - generic [ref=e396]: GPT Prompt로 커스텀 AI Agent 만들기
+                - generic [ref=e398]:
+                  - generic [ref=e399]: 자세히 보기
+                  - img "arrow-right" [ref=e401]:
+                    - img [ref=e402]
+          - link "Github Actions DevOps Github Actions Github Actions으로 CI/CD 파이프라인 만들기 자세히 보기 arrow-right" [ref=e405] [cursor=pointer]:
+            - /url: /post/2a382666-ec16-80e3-9f6c-e1f2c41d4a9c
+            - generic [ref=e406]:
+              - img "Github Actions" [ref=e409]
+              - generic [ref=e412]:
+                - generic [ref=e415]: DevOps
+                - heading "Github Actions" [level=4] [ref=e417]
+                - generic [ref=e419]: Github Actions으로 CI/CD 파이프라인 만들기
+                - generic [ref=e421]:
+                  - generic [ref=e422]: 자세히 보기
+                  - img "arrow-right" [ref=e424]:
+                    - img [ref=e425]
+          - link "Promise Frontend Promise Promise에 대해 자세히 알아보자 자세히 보기 arrow-right" [ref=e428] [cursor=pointer]:
+            - /url: /post/2a082666-ec16-80c6-bca7-e54577b3dda1
+            - generic [ref=e429]:
+              - img "Promise" [ref=e432]
+              - generic [ref=e435]:
+                - generic [ref=e438]: Frontend
+                - heading "Promise" [level=4] [ref=e440]
+                - generic [ref=e442]: Promise에 대해 자세히 알아보자
+                - generic [ref=e444]:
+                  - generic [ref=e445]: 자세히 보기
+                  - img "arrow-right" [ref=e447]:
+                    - img [ref=e448]
+          - link "쿠키 & Section & JWT CS 쿠키 & Section & JWT 쿠키 & Section & JWT 자세히 보기 arrow-right" [ref=e451] [cursor=pointer]:
+            - /url: /post/29f82666-ec16-80c0-afaf-ef3eb3207fb4
+            - generic [ref=e452]:
+              - img "쿠키 & Section & JWT" [ref=e455]
+              - generic [ref=e458]:
+                - generic [ref=e461]: CS
+                - heading "쿠키 & Section & JWT" [level=4] [ref=e463]
+                - generic [ref=e465]: 쿠키 & Section & JWT
+                - generic [ref=e467]:
+                  - generic [ref=e468]: 자세히 보기
+                  - img "arrow-right" [ref=e470]:
+                    - img [ref=e471]
+          - link "useState & useRef Next.js useState & useRef useState와 useRef의 차이점 그리고 사용법 자세히 보기 arrow-right" [ref=e474] [cursor=pointer]:
+            - /url: /post/29e82666-ec16-803b-a042-fafcb96290ba
+            - generic [ref=e475]:
+              - img "useState & useRef" [ref=e478]
+              - generic [ref=e481]:
+                - generic [ref=e484]: Next.js
+                - heading "useState & useRef" [level=4] [ref=e486]
+                - generic [ref=e488]: useState와 useRef의 차이점 그리고 사용법
+                - generic [ref=e490]:
+                  - generic [ref=e491]: 자세히 보기
+                  - img "arrow-right" [ref=e493]:
+                    - img [ref=e494]
+        - list [ref=e498]:
+          - listitem "Previous Page" [ref=e499]:
+            - button "left" [disabled] [ref=e500]:
+              - img "left" [ref=e501]:
+                - img [ref=e502]
+          - listitem "1" [ref=e504]
+          - listitem "2" [ref=e505]
+          - listitem "3" [ref=e506]
+          - listitem "4" [ref=e507]
+          - listitem "5" [ref=e508]
+          - listitem "6" [ref=e509]
+          - listitem "7" [ref=e510]
+          - listitem "Next Page" [ref=e511]:
+            - button "right" [ref=e512]:
+              - img "right" [ref=e513]:
+                - img [ref=e514]
+  - contentinfo [ref=e516]:
+    - generic [ref=e518]:
+      - generic [ref=e519]: HJ Tech Blog
+      - heading "기록이 쌓이면 팀의 속도가 됩니다" [level=5] [ref=e521]
+      - generic [ref=e523]: © 2026 HJ. Engineering notes, experiments, and postmortems.

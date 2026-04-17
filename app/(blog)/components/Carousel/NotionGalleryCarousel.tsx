@@ -1,233 +1,197 @@
-import 'swiper/css';
-import 'swiper/css/navigation';
+'use client';
 
-import Image from 'next/image';
-import { useMemo, useRef, useState } from 'react';
-import type { Swiper as SwiperInstance } from 'swiper';
-import { Autoplay, Keyboard, Navigation } from 'swiper/modules';
-import { Swiper, SwiperSlide } from 'swiper/react';
+import Link from 'next/link';
 
+import { ArrowRightOutlined } from '@ant-design/icons';
+import { Button, Card, Col, Grid, Row, Space, Typography } from 'antd';
+
+import { PostCover } from '@/components/Post/PostCover';
 import type { NotionPage } from '@/lib/notion-page';
 
-import { NotionGalleryCarouselSkeleton } from './NotionGalleryCarouselSkeleton';
+interface NotionGalleryCarouselProps {
+  pages: NotionPage[];
+}
 
-export function NotionGalleryCarousel({
-  pages,
-  skeleton = false,
-}: {
-  pages?: NotionPage[];
-  skeleton?: boolean;
-}) {
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const swiperRef = useRef<SwiperInstance | null>(null);
+export function NotionGalleryCarousel({ pages }: NotionGalleryCarouselProps) {
+  const screens = Grid.useBreakpoint();
+  const featured = pages.slice(0, 3);
+  const primary = featured[0];
+  const secondary = featured.slice(1);
 
-  const items = useMemo(() => (Array.isArray(pages) ? pages : []), [pages]);
-  const filteredItems = useMemo(() => items.filter((item) => item.cover), [items]);
-
-  if (skeleton || !pages || pages.length === 0) {
-    return <NotionGalleryCarouselSkeleton />;
-  }
-
-  if (!filteredItems.length) {
-    return (
-      <div style={{ padding: 16, textAlign: 'center', color: '#666' }}>
-        No featured posts available.
-      </div>
-    );
+  if (!primary) {
+    return null;
   }
 
   return (
     <section
-      aria-label="Featured posts carousel"
       style={{
-        position: 'relative',
+        maxWidth: 1280,
+        margin: '0 auto',
+        padding: screens.lg ? '32px 24px 0' : '20px 16px 0',
         width: '100%',
-        height: 'min(75vh, 450px)',
       }}
     >
-      <Swiper
-        autoplay={{ delay: 5000 }}
-        modules={[Navigation, Keyboard, Autoplay]}
-        slidesPerView={1}
-        spaceBetween={0}
-        onSlideChange={(swiper) =>
-          setCurrentIndex(swiper.realIndex % filteredItems.length)
-        }
-        onSwiper={(swiper) => {
-          swiperRef.current = swiper;
-        }}
-        navigation={false}
-        keyboard={{ enabled: true }}
-        style={{ width: '100%', height: '100%' }}
-        loop={true}
-      >
-        {filteredItems.map((item) => (
-          <SwiperSlide key={item.id}>
-            <div style={{ width: '100%', height: '100%', position: 'relative' }}>
-              <Image
-                src={`${item.cover}`}
-                alt={item.title}
-                style={{
-                  width: '100%',
-                  height: '100%',
-                  objectFit: 'cover',
-                  display: 'block',
-                  backgroundColor: '#222',
-                }}
-                onError={(e) => {
-                  e.currentTarget.style.display = 'none';
-                }}
-                fill
-              />
-              <div
-                style={{
-                  position: 'absolute',
-                  inset: 0,
-                  backgroundColor: 'rgba(0, 0, 0, 0.5)',
-                  zIndex: 1,
-                  pointerEvents: 'none',
-                }}
-              />
-              <a
-                href={`/post/${item.id}`}
-                style={{
-                  position: 'absolute',
-                  inset: 0,
-                  zIndex: 2,
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  color: '#fff',
-                  textDecoration: 'none',
-                  padding: '0 26px',
-                  textShadow: '0 2px 8px rgba(0, 0, 0, 0.6)',
-                }}
-              >
-                <div
-                  style={{
-                    width: 'min(70%, 900px)',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'center',
-                    textAlign: 'center',
-                  }}
-                >
-                  {item.category && (
-                    <div
-                      style={{
-                        color: '#fff',
-                        fontSize: '0.9rem',
-                        fontWeight: 600,
-                        marginBottom: 10,
-                        letterSpacing: '0.08em',
-                        opacity: 0.85,
-                        borderRadius: 22,
-                        border: '1px solid white',
-                        padding: '4px 14px',
-                      }}
-                    >
-                      {item.category}
-                    </div>
-                  )}
-                  <div
-                    style={{
-                      color: '#fff',
-                      maxWidth: '90%',
-                      fontSize: 'clamp(1.8rem, 4vw, 2.5rem)',
-                      fontWeight: 700,
-                      marginBottom: 10,
-                      wordBreak: 'keep-all',
-                    }}
-                  >
-                    {item.title}
-                  </div>
-                  {item.subtitle && (
-                    <div
-                      style={{
-                        color: '#fff',
-                        width: '100%',
-                        minHeight: 60,
-                        fontSize: 'clamp(1rem, 2vw, 1.2rem)',
-                        opacity: 0.92,
-                      }}
-                    >
-                      {item.subtitle}
-                    </div>
-                  )}
-                </div>
-              </a>
-            </div>
-          </SwiperSlide>
-        ))}
-      </Swiper>
-      <button
-        aria-label="Previous slide"
-        onClick={() => swiperRef.current?.slidePrev()}
-        style={arrowButtonStyle('left')}
-        type="button"
-      >
-        <Image src="/carousel-left.png" alt="Previous slide" width={64} height={64} />
-      </button>
-      <button
-        aria-label="Next slide"
-        onClick={() => swiperRef.current?.slideNext()}
-        style={arrowButtonStyle('right')}
-        type="button"
-      >
-        <Image src="/carousel-right.png" alt="Next slide" width={64} height={64} />
-      </button>
-      <div
-        style={{
-          position: 'absolute',
-          left: '50%',
-          bottom: 32,
-          zIndex: 10,
-          display: 'flex',
-          gap: 8,
-          transform: 'translateX(-50%)',
-        }}
-      >
-        {filteredItems.map((_, idx) => (
-          <div
-            key={idx}
-            aria-label={`Slide ${idx + 1}`}
-            role="button"
-            tabIndex={-1}
-            onClick={() => {
-              setCurrentIndex(idx);
-              swiperRef.current?.slideToLoop(idx);
-            }}
+      <Row gutter={[24, 24]} align="stretch">
+        <Col xs={24} lg={16}>
+          <Card
+            variant="borderless"
             style={{
-              width: 10,
-              height: 10,
-              borderRadius: '50%',
-              backgroundColor: '#fff',
-              opacity: idx === currentIndex ? 1 : 0.35,
-              cursor: idx === currentIndex ? 'default' : 'pointer',
+              borderRadius: 28,
+              background: 'rgba(255,252,247,0.76)',
+              border: '1px solid rgba(125, 105, 74, 0.14)',
+              boxShadow: 'none',
             }}
-          />
-        ))}
-      </div>
+            styles={{ body: { padding: screens.lg ? 28 : 18 } }}
+          >
+            <Row gutter={[20, 20]} align="middle">
+              <Col xs={24} md={11}>
+                <Link href={`/post/${primary.id}`} style={{ display: 'block' }}>
+                  <PostCover
+                    src={primary.cover}
+                    alt={primary.title}
+                    priority
+                    minHeight={screens.lg ? 360 : 260}
+                    borderRadius={22}
+                    overlay="linear-gradient(180deg, rgba(24, 31, 46, 0.06), rgba(24, 31, 46, 0.18))"
+                    sizes="(max-width: 992px) 100vw, 40vw"
+                  />
+                </Link>
+              </Col>
+
+              <Col xs={24} md={13}>
+                <Space direction="vertical" size={18} style={{ width: '100%' }}>
+                  <Space size={12} wrap>
+                    <Typography.Text
+                      style={{
+                        fontSize: 11,
+                        fontWeight: 700,
+                        letterSpacing: '0.16em',
+                        color: '#8a7661',
+                        textTransform: 'uppercase',
+                      }}
+                    >
+                      Editor&apos;s Pick
+                    </Typography.Text>
+                    {primary.category && (
+                      <Typography.Text style={{ color: '#5b6472' }}>
+                        {primary.category}
+                      </Typography.Text>
+                    )}
+                  </Space>
+
+                  <div>
+                    <Typography.Title
+                      level={1}
+                      className="editorial-serif"
+                      style={{
+                        color: '#1d2736',
+                        margin: 0,
+                        fontSize: screens.lg ? 44 : 34,
+                        lineHeight: 1.18,
+                      }}
+                    >
+                      {primary.title}
+                    </Typography.Title>
+                    <Typography.Paragraph
+                      style={{
+                        color: '#5d6675',
+                        fontSize: 17,
+                        lineHeight: 1.8,
+                        margin: '18px 0 0',
+                      }}
+                    >
+                      {primary.description ||
+                        primary.subtitle ||
+                        '이번 주에 먼저 읽어둘 만한 글입니다.'}
+                    </Typography.Paragraph>
+                  </div>
+
+                  <Typography.Text style={{ color: '#7a828f' }}>
+                    최신 글 흐름에서 중심이 되는 한 편을 골라 전면에
+                    배치했습니다.
+                  </Typography.Text>
+
+                  <Link href={`/post/${primary.id}`}>
+                    <Button
+                      type="text"
+                      icon={<ArrowRightOutlined />}
+                      iconPosition="end"
+                      style={{
+                        paddingInline: 0,
+                        color: '#1f3f8f',
+                        fontWeight: 700,
+                      }}
+                    >
+                      본문 읽기
+                    </Button>
+                  </Link>
+                </Space>
+              </Col>
+            </Row>
+          </Card>
+        </Col>
+
+        <Col xs={24} lg={8}>
+          <Space direction="vertical" size={18} style={{ width: '100%' }}>
+            {secondary.map((page, index) => (
+              <Link
+                key={page.id}
+                href={`/post/${page.id}`}
+                style={{ display: 'block' }}
+              >
+                <Card
+                  hoverable
+                  variant="borderless"
+                  style={{
+                    borderRadius: 24,
+                    background: 'rgba(255,252,247,0.72)',
+                    border: '1px solid rgba(125, 105, 74, 0.12)',
+                    boxShadow: 'none',
+                  }}
+                  styles={{ body: { padding: 22 } }}
+                >
+                  <Space
+                    direction="vertical"
+                    size={10}
+                    style={{ width: '100%' }}
+                  >
+                    <Typography.Text
+                      style={{
+                        fontSize: 11,
+                        fontWeight: 700,
+                        letterSpacing: '0.16em',
+                        color: '#8a7661',
+                        textTransform: 'uppercase',
+                      }}
+                    >
+                      0{index + 2}
+                    </Typography.Text>
+                    <Typography.Title
+                      level={4}
+                      className="editorial-serif"
+                      style={{ margin: 0, color: '#1d2736', lineHeight: 1.3 }}
+                      ellipsis={{ rows: 2 }}
+                    >
+                      {page.title}
+                    </Typography.Title>
+                    <Typography.Paragraph
+                      style={{ margin: 0, color: '#667085', lineHeight: 1.7 }}
+                      ellipsis={{ rows: 2 }}
+                    >
+                      {page.description || page.subtitle}
+                    </Typography.Paragraph>
+                    <Typography.Text
+                      style={{ color: '#1f3f8f', fontWeight: 700 }}
+                    >
+                      이어서 읽기
+                    </Typography.Text>
+                  </Space>
+                </Card>
+              </Link>
+            ))}
+          </Space>
+        </Col>
+      </Row>
     </section>
   );
-}
-
-function arrowButtonStyle(side: 'left' | 'right') {
-  return {
-    position: 'absolute',
-    top: '50%',
-    [side]: 20,
-    width: 64,
-    height: 64,
-    backgroundColor: 'transparent',
-    border: 'none',
-    borderRadius: '50%',
-    color: '#fff',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    zIndex: 20,
-    cursor: 'pointer',
-    transform: 'translateY(-50%)',
-  } as const;
 }
