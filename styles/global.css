@@ -36,9 +36,6 @@ body {
 
 body {
   --notion-font: var(--page-sans);
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.42), transparent 18%),
-    linear-gradient(180deg, #faf7f2 0%, var(--page-bg) 38%, #f3eee6 100%);
   font-family: var(--page-sans);
   color: var(--page-text);
   overflow-x: hidden;
