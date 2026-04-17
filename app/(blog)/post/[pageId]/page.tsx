@@ -64,11 +64,16 @@ export default async function PostPage({ params }: PostPageProps) {
   let props;
   try {
     props = await resolveNotionPage(domain, pageId);
-    await increaseNotionView(pageId);
   } catch (err) {
     console.error('❌ Failed to load page:', pageId, err);
     notFound();
   }
+
+  if (props.error || !props.recordMap) {
+    notFound();
+  }
+
+  await increaseNotionView(pageId);
 
   return <NotionPostPageClient {...props} postId={pageId} />;
 }

@@ -11,14 +11,17 @@ interface NotionCardListProps {
   searchTerm: string;
 }
 
-function highlight(text: string, keyword: string) {
-  if (!keyword || keyword.trim() === '') return text;
+function highlight(text?: string | null, keyword?: string | null) {
+  const safeText = text ?? '';
+  const safeKeyword = keyword ?? '';
+
+  if (safeKeyword.trim() === '') return safeText;
   // eslint-disable-next-line security/detect-non-literal-regexp
   const regex = new RegExp(
-    `(${keyword.replaceAll(/[.*+?^${}()|[\]\\]/g, '\\$&')})`,
+    `(${safeKeyword.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`,
     'gi',
   );
-  const parts = text.split(regex);
+  const parts = safeText.split(regex);
   return parts.map((part, i) =>
     regex.test(part) ? (
       <mark

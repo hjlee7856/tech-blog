@@ -4,15 +4,14 @@ export async function increaseNotionView(pageId: string): Promise<boolean> {
   if (!pageId || typeof pageId !== 'string' || !supabase) {
     return false;
   }
-
   try {
     const { data: before, error: err1 } = await supabase
       .from('notion_pages')
       .select('view_count')
       .eq('id', pageId)
-      .single();
+      .maybeSingle();
 
-    if (err1 && err1.code !== 'PGRST116') {
+    if (err1) {
       throw new Error(err1?.message || 'DB error');
     }
 
@@ -25,13 +24,13 @@ export async function increaseNotionView(pageId: string): Promise<boolean> {
       .update({ view_count: before.view_count + 1 })
       .eq('id', pageId)
       .select('view_count')
-      .single();
+      .maybeSingle();
 
     if (updateError) {
       throw updateError;
     }
 
-    return !!updated;
+    return Boolean(updated);
   } catch (err: any) {
     console.error('increaseNotionView error:', err);
     return false;

@@ -2,13 +2,21 @@ import { type ExtendedRecordMap } from 'notion-types';
 import { parsePageId } from 'notion-utils';
 
 import * as acl from './acl';
-import { environment, pageUrlAdditions, pageUrlOverrides, site } from './config';
+import {
+  environment,
+  pageUrlAdditions,
+  pageUrlOverrides,
+  site,
+} from './config';
 import { db } from './db';
 import { getSiteMap } from './get-site-map';
 import { getPage } from './notion';
 import type { PageProps } from './types';
 
-export async function resolveNotionPage(domain: string, rawPageId?: string): Promise<PageProps> {
+export async function resolveNotionPage(
+  domain: string,
+  rawPageId?: string,
+): Promise<PageProps> {
   let pageId: string | undefined;
   let recordMap: ExtendedRecordMap;
 
@@ -16,7 +24,8 @@ export async function resolveNotionPage(domain: string, rawPageId?: string): Pro
     pageId = parsePageId(rawPageId)!;
 
     if (!pageId) {
-      const override = pageUrlOverrides[rawPageId] || pageUrlAdditions[rawPageId];
+      const override =
+        pageUrlOverrides[rawPageId] || pageUrlAdditions[rawPageId];
 
       if (override) {
         pageId = parsePageId(override)!;

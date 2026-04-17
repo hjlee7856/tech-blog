@@ -8,7 +8,6 @@ import { useSearchParam } from 'react-use';
 import * as config from '@/lib/config';
 import { mapImageUrl } from '@/lib/map-image-url';
 import { mapPageUrl } from '@/lib/map-page-url';
-import { searchNotion } from '@/lib/search-notion';
 import type * as types from '@/lib/types';
 
 import { FloatingScrollTopButton } from '../../../../../components/Button/Floating/FloatingScrollTopButton';
@@ -137,7 +136,6 @@ export function NotionPostPage({
           defaultPageCoverPosition={config.defaultPageCoverPosition}
           mapPageUrl={siteMapPageUrl}
           mapImageUrl={mapImageUrl}
-          searchNotion={config.isSearchEnabled ? searchNotion : undefined}
           disableHeader
         />
         <div className="notion">
