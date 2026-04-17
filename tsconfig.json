@@ -20,9 +20,6 @@
       ],
       "@/hooks/*": [
         "hooks/*"
-      ],
-      "@/styled-system/*": [
-        "styled-system/*"
       ]
     },
     "plugins": [

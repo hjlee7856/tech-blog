@@ -3,9 +3,6 @@ import { config } from '@fisch0920/config/eslint';
 export default [
   ...config,
   {
-    ignores: ['styled-system/**'],
-  },
-  {
     files: ['**/*.ts', '**/*.tsx'],
     rules: {
       '@typescript-eslint/no-unused-vars': 'off',

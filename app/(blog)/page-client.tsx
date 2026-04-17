@@ -2,18 +2,14 @@
 
 import { useRef, useState } from 'react';
 
+import { Grid } from 'antd';
+
 import { FloatingScrollTopButton } from '@/components/Button/Floating/FloatingScrollTopButton';
 import { Footer } from '@/components/Footer/Footer';
 import { Header } from '@/components/Header/Header';
 import { ProfileSidebar } from '@/components/Sidebar/ProfileSidebar';
 import { useNotionData } from '@/hooks/useNotionData';
 import type { NotionPage } from '@/lib/notion-page';
-import {
-  Content,
-  ContentContainer,
-  Main,
-  MainContent,
-} from '@/styles/page-layout.styles';
 import { NotionCardList } from 'app/(blog)/components/CardList/NotionCardList';
 import { NotionCardSkeleton } from 'app/(blog)/components/CardList/NotionCardSkeleton';
 import { NotionGalleryCarousel } from 'app/(blog)/components/Carousel/NotionGalleryCarousel';
@@ -32,6 +28,8 @@ export function NotionDomainPageClient({
   total: initialTotal,
   categories: initialCategories,
 }: NotionDomainPageClientProps) {
+  const screens = Grid.useBreakpoint();
+  const isMobile = !screens.lg;
   const [inputValue, setInputValue] = useState('');
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const debounceTimerRef = useRef<NodeJS.Timeout | null>(null);
@@ -86,11 +84,17 @@ export function NotionDomainPageClient({
         onToggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)}
         showToggle={true}
       />
-      <ContentContainer>
+      <div
+        style={{
+          display: 'flex',
+          width: '100%',
+          alignItems: 'flex-start',
+        }}
+      >
         <ProfileSidebar
           name="HJ"
           email="jacker97@naver.com"
-          bio="프론트엔드 개발자"
+          bio="Frontend Developer"
           githubUrl="https://github.com/hjlee7856"
           categories={categories}
           activeCategory={activeCategory}
@@ -98,20 +102,42 @@ export function NotionDomainPageClient({
           isOpen={isSidebarOpen}
           onClose={() => setIsSidebarOpen(false)}
         />
-        <MainContent>
-          {initialPages.length === 0 ? (
-            <NotionGalleryCarousel pages={items.slice(0, 10)} />
-          ) : (
-            <NotionGalleryCarousel pages={initialPages.slice(0, 10)} />
-          )}
-          <Main>
-            <Content>
+        <main
+          style={{
+            flex: 1,
+            minWidth: 0,
+            width: '100%',
+            display: 'flex',
+            flexDirection: 'column',
+          }}
+        >
+          <NotionGalleryCarousel
+            pages={
+              initialPages.length === 0 ? items.slice(0, 10) : initialPages.slice(0, 10)
+            }
+          />
+          <div
+            style={{
+              width: '100%',
+              display: 'flex',
+              justifyContent: 'center',
+              paddingInline: isMobile ? 0 : 24,
+            }}
+          >
+            <div
+              style={{
+                width: '100%',
+                maxWidth: 1200,
+                padding: isMobile ? 0 : 24,
+              }}
+            >
               <SearchBar
                 value={inputValue}
                 onChange={handleSearchInputChange}
                 onSearch={() => {
-                  if (debounceTimerRef.current)
+                  if (debounceTimerRef.current) {
                     clearTimeout(debounceTimerRef.current);
+                  }
                   handleSearch(inputValue);
                 }}
                 onKeyDown={handleSearchInputKeyDown}
@@ -151,7 +177,7 @@ export function NotionDomainPageClient({
                           fontWeight: 500,
                         }}
                       >
-                        검색 결과가 없습니다
+                        No search results found.
                       </div>
                     );
                   }
@@ -168,12 +194,12 @@ export function NotionDomainPageClient({
                   );
                 })()}
               </section>
-            </Content>
-          </Main>
+            </div>
+          </div>
 
           <FloatingScrollTopButton />
-        </MainContent>
-      </ContentContainer>
+        </main>
+      </div>
       <Footer />
     </div>
   );

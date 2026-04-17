@@ -40,8 +40,7 @@ export function useNotionData({
   // 초기 로드 시에만 URL 파라미터로 activeCategory 설정
   useEffect(() => {
     setActiveCategory(categoryFromUrl);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [categoryFromUrl]);
 
   // 카테고리, 페이지, 검색어 변경 시 데이터 페칭
   useEffect(() => {
@@ -103,8 +102,10 @@ export function useNotionData({
       }
     };
 
-    void fetchInitialData();
-  }, []);
+    if (categories.length === 0) {
+      void fetchInitialData();
+    }
+  }, [categories.length]);
 
   const handleCategoryChange = useCallback((category: string) => {
     setSearchTerm('');

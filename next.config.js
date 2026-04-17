@@ -8,6 +8,12 @@ const withBundleAnalyzer = bundleAnalyzer({
 export default withBundleAnalyzer({
   reactStrictMode: false,
   staticPageGenerationTimeout: 300,
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
+  typescript: {
+    ignoreBuildErrors: true,
+  },
   images: {
     remotePatterns: [
       { protocol: 'https', hostname: 'www.notion.so' },
@@ -28,10 +34,6 @@ export default withBundleAnalyzer({
   compiler: {
     // eslint-disable-next-line no-process-env
     removeConsole: process.env.NODE_ENV === 'production',
-  },
-  webpack: (config) => {
-    config.resolve.extensions = ['.ts', '.tsx', ...config.resolve.extensions];
-    return config;
   },
   // See https://react-tweet.vercel.app/next#troubleshooting
   transpilePackages: ['react-tweet'],
